@@ -1,0 +1,352 @@
+/**
+ * SuperQwen-Enhanced Parlant Integration
+ *
+ * Bridges Parlant (TypeScript/Node.js) with SuperQwen Framework for:
+ * - Conversational AI with context retention
+ * - Multi-turn dialogue management
+ * - Agent persona integration
+ * - Background task execution
+ */
+
+const fs = require('fs').promises;
+const path = require('path');
+const http = require('http');
+
+// Parlant client for conversational AI
+// Note: This is a stub - actual Parlant import depends on version
+// const parlant = require('parlant');
+
+class SuperQwenParlant {
+  constructor(options = {}) {
+    this.mode = options.mode || 'conversational';
+    this.ollamaUrl = options.ollamaUrl || 'http://localhost:11434';
+    this.model = options.model || 'qwen2.5:7b-instruct';
+    this.superqwenPath = options.superqwenPath || '/opt/motia/agents/superqwen';
+
+    this.conversationHistory = [];
+    this.currentPersona = null;
+    this.agents = {};
+    this.commands = {};
+
+    console.log('[SuperQwenParlant] Initialized');
+    console.log(`  Mode: ${this.mode}`);
+    console.log(`  Model: ${this.model}`);
+  }
+
+  async loadSuperQwenComponents() {
+    console.log('[SuperQwenParlant] Loading SuperQwen components...');
+
+    // Load agent personas
+    const agentsDir = path.join(this.superqwenPath, '.qwen', 'agents');
+    try {
+      const files = await fs.readdir(agentsDir);
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const content = await fs.readFile(path.join(agentsDir, file), 'utf8');
+          const agentName = path.basename(file, '.md');
+          this.agents[agentName] = this.parseAgentFile(content);
+        }
+      }
+      console.log(`  Loaded ${Object.keys(this.agents).length} agents`);
+    } catch (err) {
+      console.error('  Failed to load agents:', err.message);
+    }
+
+    // Load command workflows
+    const commandsDir = path.join(this.superqwenPath, '.qwen', 'commands');
+    try {
+      const files = await fs.readdir(commandsDir);
+      for (const file of files) {
+        if (file.endsWith('.toml')) {
+          // Simple TOML parsing - in production use a proper TOML parser
+          const content = await fs.readFile(path.join(commandsDir, file), 'utf8');
+          const cmdName = path.basename(file, '.toml');
+          this.commands[cmdName] = { content };
+        }
+      }
+      console.log(`  Loaded ${Object.keys(this.commands).length} commands`);
+    } catch (err) {
+      console.error('  Failed to load commands:', err.message);
+    }
+  }
+
+  parseAgentFile(content) {
+    // Parse frontmatter and content from markdown
+    const lines = content.split('\n');
+    if (lines[0] === '---') {
+      const endIndex = lines.slice(1).findIndex(l => l === '---') + 1;
+      const frontmatter = lines.slice(1, endIndex).join('\n');
+      const body = lines.slice(endIndex + 1).join('\n');
+
+      // Simple YAML parsing - in production use proper YAML parser
+      const metadata = {};
+      frontmatter.split('\n').forEach(line => {
+        const match = line.match(/^(\w+):\s*(.+)$/);
+        if (match) {
+          metadata[match[1]] = match[2];
+        }
+      });
+
+      return { metadata, content: body };
+    }
+    return { metadata: {}, content };
+  }
+
+  setPersona(personaName) {
+    if (!this.agents[personaName]) {
+      throw new Error(`Unknown persona: ${personaName}`);
+    }
+
+    this.currentPersona = personaName;
+    const persona = this.agents[personaName];
+
+    // Add persona to conversation history
+    if (this.mode === 'conversational') {
+      this.conversationHistory.push({
+        role: 'system',
+        content: `You are now acting as: ${persona.metadata.name || personaName}\n\n${persona.content}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    console.log(`[SuperQwenParlant] Activated persona: ${personaName}`);
+    return persona;
+  }
+
+  async chat(message, options = {}) {
+    // Add user message to history
+    this.conversationHistory.push({
+      role: 'user',
+      content: message,
+      timestamp: new Date().toISOString()
+    });
+
+    // Prepare messages for Ollama
+    const messages = [];
+
+    // Add system prompt if provided
+    if (options.systemPrompt) {
+      messages.push({ role: 'system', content: options.systemPrompt });
+    }
+
+    // Add conversation history
+    for (const msg of this.conversationHistory) {
+      if (msg.role !== 'system' || !options.systemPrompt) {
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    }
+
+    // Call Ollama API
+    const response = await this.callOllama(messages, options);
+
+    // Add assistant response to history
+    this.conversationHistory.push({
+      role: 'assistant',
+      content: response.content,
+      timestamp: new Date().toISOString()
+    });
+
+    return {
+      content: response.content,
+      conversationLength: this.conversationHistory.length,
+      model: this.model
+    };
+  }
+
+  async executeCommand(commandName, context, options = {}) {
+    if (!this.commands[commandName]) {
+      throw new Error(`Unknown command: ${commandName}`);
+    }
+
+    const cmd = this.commands[commandName];
+
+    // Build full prompt from command template + context
+    const fullPrompt = `${cmd.content}\n\n## Task\n\n${context}`;
+
+    if (this.mode === 'conversational') {
+      return await this.chat(fullPrompt, options);
+    } else {
+      // Background mode - direct execution
+      const messages = [
+        { role: 'system', content: cmd.content },
+        { role: 'user', content: context }
+      ];
+
+      return await this.callOllama(messages, options);
+    }
+  }
+
+  async callOllama(messages, options = {}) {
+    const payload = {
+      model: this.model,
+      messages: messages,
+      options: {
+        num_predict: options.maxTokens || 2000,
+        temperature: options.temperature || 0.7
+      },
+      stream: false
+    };
+
+    return new Promise((resolve, reject) => {
+      const postData = JSON.stringify(payload);
+
+      const req = http.request({
+        hostname: 'localhost',
+        port: 11434,
+        path: '/v1/chat/completions',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      }, (res) => {
+        let data = '';
+
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        res.on('end', () => {
+          try {
+            const result = JSON.parse(data);
+            resolve({
+              content: result.choices[0].message.content,
+              usage: result.usage || {},
+              model: result.model
+            });
+          } catch (err) {
+            reject(new Error(`Failed to parse Ollama response: ${err.message}`));
+          }
+        });
+      });
+
+      req.on('error', (err) => {
+        reject(new Error(`Ollama API error: ${err.message}`));
+      });
+
+      req.write(postData);
+      req.end();
+    });
+  }
+
+  clearConversation() {
+    this.conversationHistory = [];
+    this.currentPersona = null;
+    console.log('[SuperQwenParlant] Conversation cleared');
+  }
+
+  async saveConversation(filepath) {
+    const data = {
+      mode: this.mode,
+      persona: this.currentPersona,
+      messageCount: this.conversationHistory.length,
+      messages: this.conversationHistory
+    };
+
+    await fs.writeFile(filepath, JSON.stringify(data, null, 2));
+    console.log(`[SuperQwenParlant] Conversation saved to ${filepath}`);
+  }
+
+  async loadConversation(filepath) {
+    const data = JSON.parse(await fs.readFile(filepath, 'utf8'));
+    this.conversationHistory = data.messages;
+    this.currentPersona = data.persona;
+    this.mode = data.mode;
+    console.log(`[SuperQwenParlant] Conversation loaded from ${filepath}`);
+  }
+
+  listAgents() {
+    return Object.keys(this.agents);
+  }
+
+  listCommands() {
+    return Object.keys(this.commands);
+  }
+
+  getStats() {
+    return {
+      mode: this.mode,
+      currentPersona: this.currentPersona,
+      conversationLength: this.conversationHistory.length,
+      availableAgents: Object.keys(this.agents).length,
+      availableCommands: Object.keys(this.commands).length,
+      superqwenEnabled: true,
+      runtime: 'Node.js',
+      framework: 'Parlant'
+    };
+  }
+}
+
+// HTTP server for Python bridge
+function createBridgeServer(port = 3000) {
+  const agent = new SuperQwenParlant({ mode: 'conversational' });
+
+  agent.loadSuperQwenComponents().then(() => {
+    const server = http.createServer(async (req, res) => {
+      if (req.method === 'POST') {
+        let body = '';
+
+        req.on('data', chunk => {
+          body += chunk.toString();
+        });
+
+        req.on('end', async () => {
+          try {
+            const data = JSON.parse(body);
+            let result;
+
+            switch (data.action) {
+              case 'chat':
+                result = await agent.chat(data.message, data.options || {});
+                break;
+              case 'executeCommand':
+                result = await agent.executeCommand(data.command, data.context, data.options || {});
+                break;
+              case 'setPersona':
+                result = agent.setPersona(data.persona);
+                break;
+              case 'clearConversation':
+                agent.clearConversation();
+                result = { success: true };
+                break;
+              case 'getStats':
+                result = agent.getStats();
+                break;
+              case 'listAgents':
+                result = { agents: agent.listAgents() };
+                break;
+              case 'listCommands':
+                result = { commands: agent.listCommands() };
+                break;
+              default:
+                throw new Error(`Unknown action: ${data.action}`);
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true, result }));
+          } catch (err) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+          }
+        });
+      } else {
+        res.writeHead(405, { 'Content-Type': 'text/plain' });
+        res.end('Method Not Allowed');
+      }
+    });
+
+    server.listen(port, () => {
+      console.log(`[SuperQwenParlant] Bridge server listening on port ${port}`);
+      console.log('  Available agents:', agent.listAgents().join(', '));
+      console.log('  Available commands:', agent.listCommands().join(', '));
+    });
+  });
+}
+
+// Export for use as module
+module.exports = { SuperQwenParlant, createBridgeServer };
+
+// If run directly, start bridge server
+if (require.main === module) {
+  createBridgeServer(3000);
+}

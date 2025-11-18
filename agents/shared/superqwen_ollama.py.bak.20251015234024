@@ -1,0 +1,396 @@
+"""
+SuperQwen-Enhanced Ollama Provider
+
+Extends the hybrid Ollama provider with SuperQwen Framework capabilities for:
+- Conversational mode: Interactive dialogue with persistent context
+- Background mode: Async task execution with structured outputs
+- Agent personas: Specialized expert behaviors
+- Command workflows: Task-specific execution patterns
+"""
+
+import os
+import json
+import asyncio
+from typing import Dict, Any, List, Optional, Union
+from pathlib import Path
+from datetime import datetime
+
+# Import base Ollama provider
+from hybrid_ollama import HybridOllamaProvider
+
+
+class SuperQwenOllama(HybridOllamaProvider):
+    """
+    Enhanced Ollama provider with SuperQwen Framework integration
+
+    Features:
+    - Dual mode operation (conversational/background)
+    - Agent persona loading
+    - Command workflow execution
+    - Conversation history management
+    - Structured and unstructured output support
+    """
+
+    def __init__(
+        self,
+        base_url: str = None,
+        model: str = None,
+        timeout: int = 60,
+        mode: str = "background"  # "conversational" or "background"
+    ):
+        """
+        Initialize SuperQwen-enhanced Ollama provider
+
+        Args:
+            base_url: Ollama API endpoint
+            model: Model name
+            timeout: Request timeout
+            mode: Operation mode ("conversational" or "background")
+        """
+        # Determine operation type based on mode
+        from hybrid_ollama import OperationType
+        operation_type = OperationType.BACKGROUND  # Both modes use background
+
+        # Initialize parent with proper signature
+        super().__init__(
+            operation_type=operation_type,
+            model=model,
+            enable_sns_core=True
+        )
+
+        # Override base_url and timeout if provided
+        if base_url:
+            self.base_url = base_url
+        if timeout:
+            self.timeout = timeout
+
+        self.mode = mode
+        self.conversation_history: List[Dict[str, str]] = []
+        self.current_persona: Optional[str] = None
+        self.superqwen_path = Path("/opt/motia/agents/superqwen")
+
+        # Load available agents and commands
+        self._load_superqwen_components()
+
+    def _load_superqwen_components(self):
+        """Load SuperQwen agents and commands from .qwen directory"""
+        self.agents = {}
+        self.commands = {}
+
+        # Load agent personas
+        agents_dir = self.superqwen_path / ".qwen" / "agents"
+        if agents_dir.exists():
+            for agent_file in agents_dir.glob("*.md"):
+                agent_name = agent_file.stem
+                with open(agent_file, 'r') as f:
+                    content = f.read()
+                    # Parse frontmatter and content
+                    self.agents[agent_name] = self._parse_agent_file(content)
+
+        # Load command workflows
+        commands_dir = self.superqwen_path / ".qwen" / "commands"
+        if commands_dir.exists():
+            for cmd_file in commands_dir.glob("*.toml"):
+                cmd_name = cmd_file.stem
+                with open(cmd_file, 'r') as f:
+                    import toml
+                    self.commands[cmd_name] = toml.load(f)
+
+        print(f"[SuperQwenOllama] Loaded {len(self.agents)} agents, {len(self.commands)} commands")
+
+    def _parse_agent_file(self, content: str) -> Dict[str, Any]:
+        """Parse agent markdown file with frontmatter"""
+        lines = content.split('\n')
+
+        # Extract frontmatter
+        if lines[0] == '---':
+            frontmatter_end = lines[1:].index('---') + 1
+            frontmatter = '\n'.join(lines[1:frontmatter_end])
+            body = '\n'.join(lines[frontmatter_end+1:])
+
+            # Parse YAML frontmatter
+            import yaml
+            metadata = yaml.safe_load(frontmatter)
+
+            return {
+                'metadata': metadata,
+                'content': body.strip()
+            }
+        else:
+            return {'metadata': {}, 'content': content}
+
+    def set_mode(self, mode: str):
+        """Switch between conversational and background modes"""
+        if mode not in ["conversational", "background"]:
+            raise ValueError(f"Invalid mode: {mode}. Must be 'conversational' or 'background'")
+
+        self.mode = mode
+        print(f"[SuperQwenOllama] Mode set to: {mode}")
+
+    def set_persona(self, persona_name: str):
+        """
+        Activate a specific SuperQwen agent persona
+
+        Args:
+            persona_name: Name of agent (e.g., 'python-expert', 'backend-architect')
+        """
+        if persona_name not in self.agents:
+            available = ', '.join(self.agents.keys())
+            raise ValueError(f"Unknown persona: {persona_name}. Available: {available}")
+
+        self.current_persona = persona_name
+        persona_data = self.agents[persona_name]
+
+        # Add persona system message to conversation
+        if self.mode == "conversational":
+            system_msg = f"You are now acting as: {persona_data['metadata'].get('name', persona_name)}\n\n"
+            system_msg += persona_data['content']
+
+            self.conversation_history.append({
+                'role': 'system',
+                'content': system_msg,
+                'timestamp': datetime.now().isoformat()
+            })
+
+        print(f"[SuperQwenOllama] Activated persona: {persona_name}")
+        return persona_data
+
+    def clear_conversation(self):
+        """Clear conversation history"""
+        self.conversation_history = []
+        self.current_persona = None
+        print("[SuperQwenOllama] Conversation history cleared")
+
+    async def chat(
+        self,
+        message: str,
+        system_prompt: Optional[str] = None,
+        max_tokens: int = 2000
+    ) -> Dict[str, Any]:
+        """
+        Conversational chat with context retention
+
+        Args:
+            message: User message
+            system_prompt: Optional system prompt override
+            max_tokens: Maximum response tokens
+
+        Returns:
+            Response with content and metadata
+        """
+        if self.mode != "conversational":
+            print("[SuperQwenOllama] Warning: chat() called in background mode. Consider using run() instead.")
+
+        # Add user message to history
+        self.conversation_history.append({
+            'role': 'user',
+            'content': message,
+            'timestamp': datetime.now().isoformat()
+        })
+
+        # Prepare messages for API
+        messages = []
+
+        # Add system prompt if provided
+        if system_prompt:
+            messages.append({'role': 'system', 'content': system_prompt})
+
+        # Add conversation history
+        for msg in self.conversation_history:
+            if msg['role'] != 'system' or not system_prompt:  # Skip system messages if override provided
+                messages.append({
+                    'role': msg['role'],
+                    'content': msg['content']
+                })
+
+        # Make API call
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            payload = {
+                'model': self.model_name,
+                'messages': messages,
+                'options': {
+                    'num_predict': max_tokens,
+                    'temperature': 0.7
+                },
+                'stream': False
+            }
+
+            async with session.post(
+                f"{self.base_url}/v1/chat/completions",
+                json=payload,
+                timeout=aiohttp.ClientTimeout(total=self.timeout)
+            ) as response:
+                result = await response.json()
+
+                # Extract assistant response
+                assistant_msg = result['choices'][0]['message']['content']
+
+                # Add to conversation history
+                self.conversation_history.append({
+                    'role': 'assistant',
+                    'content': assistant_msg,
+                    'timestamp': datetime.now().isoformat()
+                })
+
+                return {
+                    'content': assistant_msg,
+                    'usage': result.get('usage', {}),
+                    'model': result.get('model'),
+                    'conversation_length': len(self.conversation_history)
+                }
+
+    def chat_sync(self, message: str, **kwargs) -> Dict[str, Any]:
+        """Synchronous wrapper for chat()"""
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.chat(message, **kwargs))
+
+    async def execute_command(
+        self,
+        command_name: str,
+        context: str,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Execute a SuperQwen command workflow
+
+        Args:
+            command_name: Command to execute (e.g., 'implement', 'analyze')
+            context: Context/prompt for the command
+            **kwargs: Additional command-specific arguments
+
+        Returns:
+            Command execution result
+        """
+        if command_name not in self.commands:
+            available = ', '.join(self.commands.keys())
+            raise ValueError(f"Unknown command: {command_name}. Available: {available}")
+
+        cmd_data = self.commands[command_name]
+
+        # Build full prompt from command template + context
+        full_prompt = cmd_data['prompt'] + "\n\n## Task\n\n" + context
+
+        # Execute in background mode
+        if self.mode == "conversational":
+            # Use chat for conversational mode
+            return await self.chat(full_prompt)
+        else:
+            # Use structured execution for background mode
+            messages = [
+                {'role': 'system', 'content': cmd_data['prompt']},
+                {'role': 'user', 'content': context}
+            ]
+
+            import aiohttp
+            async with aiohttp.ClientSession() as session:
+                payload = {
+                    'model': self.model_name,
+                    'messages': messages,
+                    'stream': False
+                }
+
+                async with session.post(
+                    f"{self.base_url}/v1/chat/completions",
+                    json=payload,
+                    timeout=aiohttp.ClientTimeout(total=self.timeout)
+                ) as response:
+                    result = await response.json()
+
+                    return {
+                        'content': result['choices'][0]['message']['content'],
+                        'command': command_name,
+                        'usage': result.get('usage', {}),
+                        'mode': self.mode
+                    }
+
+    def execute_command_sync(self, command_name: str, context: str, **kwargs) -> Dict[str, Any]:
+        """Synchronous wrapper for execute_command()"""
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.execute_command(command_name, context, **kwargs))
+
+    def get_conversation_summary(self) -> Dict[str, Any]:
+        """Get summary of current conversation"""
+        return {
+            'mode': self.mode,
+            'persona': self.current_persona,
+            'message_count': len(self.conversation_history),
+            'messages': self.conversation_history
+        }
+
+    def save_conversation(self, filepath: str):
+        """Save conversation history to file"""
+        with open(filepath, 'w') as f:
+            json.dump(self.get_conversation_summary(), f, indent=2)
+        print(f"[SuperQwenOllama] Conversation saved to {filepath}")
+
+    def load_conversation(self, filepath: str):
+        """Load conversation history from file"""
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+            self.conversation_history = data['messages']
+            self.current_persona = data.get('persona')
+            self.mode = data.get('mode', 'conversational')
+        print(f"[SuperQwenOllama] Conversation loaded from {filepath}")
+
+    def list_agents(self) -> List[str]:
+        """List available agent personas"""
+        return list(self.agents.keys())
+
+    def list_commands(self) -> List[str]:
+        """List available commands"""
+        return list(self.commands.keys())
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Get provider statistics including SuperQwen data"""
+        base_stats = super().get_stats()
+
+        base_stats.update({
+            'mode': self.mode,
+            'current_persona': self.current_persona,
+            'conversation_length': len(self.conversation_history),
+            'available_agents': len(self.agents),
+            'available_commands': len(self.commands),
+            'superqwen_enabled': True
+        })
+
+        return base_stats
+
+
+if __name__ == '__main__':
+    """Test SuperQwen-enhanced Ollama provider"""
+
+    print("=== SuperQwen-Enhanced Ollama Provider Test ===\n")
+
+    # Initialize provider
+    provider = SuperQwenOllama(mode="conversational")
+
+    print(f"Available agents: {', '.join(provider.list_agents())}")
+    print(f"Available commands: {', '.join(provider.list_commands())}")
+    print()
+
+    # Test persona activation
+    print("Testing persona activation...")
+    provider.set_persona("python-expert")
+
+    # Test conversational mode
+    print("\nTesting conversational mode...")
+    response = provider.chat_sync("What are the key principles of clean Python code?")
+    print(f"Response: {response['content'][:200]}...")
+    print()
+
+    # Test command execution
+    print("Testing command execution...")
+    provider.set_mode("background")
+    result = provider.execute_command_sync(
+        "implement",
+        "Create a simple Redis cache class with get/set/delete methods"
+    )
+    print(f"Command result: {result['content'][:200]}...")
+    print()
+
+    # Show stats
+    print("Provider stats:")
+    stats = provider.get_stats()
+    for key, value in stats.items():
+        print(f"  {key}: {value}")

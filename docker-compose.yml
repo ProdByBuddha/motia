@@ -1,0 +1,90 @@
+# Docker Compose file for Motia VPS Orchestration
+
+services:
+  streaming-proxy:
+    image: node:20-alpine
+    container_name: ollama-streaming-proxy
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install express && node streaming-proxy.js"
+    expose:
+      - "3001"
+    ports:
+      - "3001:3001"
+    environment:
+      - STREAMING_PROXY_PORT=3001
+      - OLLAMA_HOST=https://ollama.com
+      - OLLAMA_API_KEY=bb22f1003ad54a589087fdb0c79a95c3.6viM5RUW05yRLanQXUCEUgsS
+    volumes:
+      - ./streaming-proxy.js:/app/streaming-proxy.js:ro
+      - streaming-proxy-modules:/app/node_modules
+    networks:
+      - traefik-proxy
+      - motia_default
+    labels:
+      - "organism.component=streaming-proxy"
+      - "organism.version=1.0"
+
+  motia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: motia
+    restart: unless-stopped
+    working_dir: /app
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - MOTIA_PORT=3000
+      - MOTIA_HOST=0.0.0.0
+      # PostgreSQL connection (BillionMail database)
+      - POSTGRES_HOST=billionmail-pgsql-billionmail-1
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=billionmail
+      - POSTGRES_PASSWORD=WajEBvUuR9vsXUrYFWM12mYzQGHjENLk
+      - POSTGRES_DB=billionmail
+      # Redis connection (BillionMail Redis)
+      - REDIS_HOST=billionmail-redis-billionmail-1
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${MOTIA_REDIS_PASSWORD}
+      # Ollama AI integration
+      - OLLAMA_HOST=https://ollama.com
+      # Service discovery
+      - TRAEFIK_HOST=traefik
+      - HOMEPAGE_HOST=homepage
+      - WIX_BACKEND_HOST=wix-backend
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - traefik-proxy
+      - motia_default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.organism-hq.rule=Host(`hq.iameternalzion.com`)"
+      - "traefik.http.routers.organism-hq.entrypoints=websecure"
+      - "traefik.http.routers.organism-hq.tls.certresolver=letsencrypt"
+      - "traefik.http.services.organism-hq.loadbalancer.server.port=3000"
+      # ORGANISM - Living Infrastructure Platform
+      - "organism.version=1.0"
+      - "organism.agents=51"
+      - "organism.systems=7"
+
+networks:
+  traefik-proxy:
+    external: true
+  motia_default:
+    driver: bridge
+
+volumes:
+  streaming-proxy-modules:

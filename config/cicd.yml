@@ -1,0 +1,188 @@
+# CI/CD System Configuration
+# Intelligent CI/CD pipeline using Motia + Pydantic AI + sns-core
+
+# Global settings
+global:
+  enabled: true
+  default_branch: main
+  webhook_secret: ${GITHUB_WEBHOOK_SECRET}
+  ai_model: ollama:qwen2.5:7b-instruct
+
+# Repository configurations
+repositories:
+  - name: billionmail
+    path: /opt/billionmail
+    git_url: https://github.com/user/billionmail.git
+    branch: main
+    dockerfile: ./Dockerfile
+
+    # Build settings
+    build:
+      enabled: true
+      auto_build: true  # Automatically build on commit
+      cache_strategy: cache  # cache, no-cache, multi-stage
+      timeout: 600  # 10 minutes
+
+    # Test settings
+    test:
+      enabled: true
+      auto_test: true  # Automatically test after build
+      test_command: pytest
+      test_path: tests/
+      timeout: 300  # 5 minutes
+
+    # Deployment settings
+    deploy:
+      staging:
+        enabled: true
+        auto_deploy: true  # Auto-deploy to staging after tests pass
+        strategy: immediate  # immediate, blue-green, canary, rolling
+        health_check_duration: 180  # 3 minutes
+        rollback_enabled: true
+
+      production:
+        enabled: true
+        auto_deploy: false  # Require manual approval for production
+        strategy: blue-green  # Use blue-green for production
+        health_check_duration: 600  # 10 minutes
+        rollback_enabled: true
+        canary_percentage: 10  # If using canary strategy
+        approval_required: true
+
+  # Add more repositories here
+  # - name: wix-backend
+  #   path: /opt/wix-backend
+  #   ...
+
+# Environment configurations
+environments:
+  staging:
+    name: staging
+    domain: staging.iameternalzion.com
+    docker_network: billionmail_billionmail-network
+    health_check_url: https://staging.iameternalzion.com/health
+    metrics_url: http://prometheus:9090
+
+  production:
+    name: production
+    domain: iameternalzion.com
+    docker_network: billionmail_billionmail-network
+    health_check_url: https://iameternalzion.com/health
+    metrics_url: http://prometheus:9090
+    alert_channels:
+      - email: buddha@iameternalzion.com
+      - slack: ${SLACK_WEBHOOK_URL}
+
+# AI Agent configurations
+agents:
+  build:
+    model: ${AI_MODEL}
+    sns_notation: true
+    max_retries: 3
+    timeout: 60
+
+  test:
+    model: ${AI_MODEL}
+    sns_notation: true
+    intelligent_selection: true
+    parallel_execution: true
+    timeout: 60
+
+  deploy:
+    model: ${AI_MODEL}
+    sns_notation: true
+    risk_assessment: true
+    auto_rollback_threshold: 2  # Rollback after 2% error rate
+    timeout: 60
+
+  monitor:
+    model: ${AI_MODEL}
+    sns_notation: true
+    check_interval: 30  # seconds
+    max_checks: 20
+    consecutive_healthy_required: 5
+    timeout: 60
+
+# sns-core settings
+sns_core:
+  enabled: true
+  compression_level: high
+  token_reduction_target: 70  # Target 70% token reduction
+
+# Monitoring and alerting
+monitoring:
+  enabled: true
+  prometheus_url: http://prometheus:9090
+  loki_url: http://loki:3100
+  grafana_url: http://grafana:3000
+
+  # Metrics to track
+  metrics:
+    - build_duration
+    - build_success_rate
+    - test_duration
+    - test_pass_rate
+    - deployment_duration
+    - deployment_success_rate
+    - error_rate
+    - response_time_p95
+    - response_time_p99
+    - cpu_usage
+    - memory_usage
+
+  # Alert thresholds
+  alerts:
+    build_failure_threshold: 2  # Alert after 2 consecutive build failures
+    test_failure_threshold: 2  # Alert after 2 consecutive test failures
+    deployment_failure_threshold: 1  # Alert immediately on deployment failure
+    error_rate_threshold: 1.0  # Alert when error rate > 1%
+    response_time_p95_threshold: 500  # Alert when p95 > 500ms
+    cpu_usage_threshold: 85  # Alert when CPU > 85%
+    memory_usage_threshold: 90  # Alert when memory > 90%
+
+# Security settings
+security:
+  vault_enabled: true
+  vault_url: ${VAULT_ADDR}
+  vault_token: ${VAULT_TOKEN}
+
+  # Secrets to inject during deployment
+  secrets:
+    - ANTHROPIC_API_KEY
+    - DATABASE_URL
+    - REDIS_URL
+    - JWT_SECRET
+
+  # Rate limiting for webhook endpoints
+  rate_limit:
+    enabled: true
+    window: 60  # seconds
+    max_requests: 100
+
+# Logging
+logging:
+  level: info
+  format: json
+  destinations:
+    - console
+    - loki
+
+  # Log retention
+  retention:
+    build_logs: 30  # days
+    test_logs: 30  # days
+    deployment_logs: 90  # days
+    monitor_logs: 30  # days
+
+# Cleanup settings
+cleanup:
+  enabled: true
+
+  # Docker image cleanup
+  images:
+    retention_days: 7
+    keep_latest: 5  # Always keep latest 5 images
+
+  # Build artifact cleanup
+  artifacts:
+    retention_days: 30

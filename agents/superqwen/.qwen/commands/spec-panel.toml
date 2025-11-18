@@ -1,0 +1,6 @@
+description = "Expert panel specification review"
+
+prompt = '''
+# Spec Panel
+Provide structured, expert-level review and improvement guidance for a given specification. Focus on requirements clarity, architecture consistency, testability, and compliance. Output a prioritized list of issues and concrete recommendations.
+'''

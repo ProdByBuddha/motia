@@ -1,0 +1,71 @@
+# AI Model Configuration
+# Defines different AI backends for different use cases
+
+# Background agent tasks (CI/CD automation)
+# - Latency: 5-10s acceptable
+# - Cost: $0 (local inference)
+# - Use case: BuildAgent, TestAgent, DeployAgent, MonitorAgent
+background_agents:
+  provider: ollama_local
+  model: qwen2.5:7b-instruct
+  endpoint: http://localhost:11434
+  sns_core_enabled: true
+  token_compression: 60-85%
+  timeout: 60
+  max_retries: 3
+
+# User-facing conversational AI (Parlant layer)
+# - Latency: <1s required
+# - Cost: Minimal with sns-core compression
+# - Use case: Natural language CI/CD commands, status queries, interactive help
+conversational_agents:
+  provider: ollama_cloud
+  model: qwen2.5:7b-instruct  # or your preferred cloud model
+  endpoint: ${OLLAMA_CLOUD_URL}  # e.g., https://api.ollama.ai
+  api_key: ${OLLAMA_CLOUD_API_KEY}
+  sns_core_enabled: true
+  token_compression: 60-85%
+  timeout: 10
+  max_retries: 2
+  streaming: true  # Enable for conversational responses
+
+# sns-core configuration (shared across all agents)
+sns_core:
+  enabled: true
+  compression_level: high
+  token_reduction_target: 70
+
+  # Encoding formats
+  notation_styles:
+    commit: "repo:X|commit:Y|branch:Z|files:A,B,C|lines:+N,-M"
+    workflow: "build:✓→test:✓→deploy:⏳"
+    result: "✓|img:X:Y|time:Zs"
+    strategy: "deploy[blue-green]|rollback[auto]|monitor[5m]"
+
+  # Token savings by operation type
+  expected_savings:
+    commit_analysis: 65%
+    test_selection: 70%
+    deployment_decision: 60%
+    health_monitoring: 75%
+    conversational_queries: 50%
+
+# Model-specific optimizations
+optimizations:
+  ollama_local:
+    batch_size: 1  # Process one at a time for CI/CD
+    context_window: 8192
+    temperature: 0.1  # Deterministic for automation
+
+  ollama_cloud:
+    batch_size: 5  # Batch user queries
+    context_window: 8192
+    temperature: 0.3  # Slightly creative for conversation
+
+# Fallback configuration
+fallback:
+  enabled: true
+  order:
+    - ollama_cloud
+    - ollama_local
+    - anthropic  # Emergency fallback

@@ -1,0 +1,23 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: agents/self_adapt/Dockerfile
+    container_name: motia-builder
+    restart: unless-stopped
+    environment:
+      - WORK_DIR=/work/jobs
+      - ALLOW_SELF_MODIFY=0
+      - OLLAMA_BASE_URL=https://genuine-shepherd-decent.ngrok-free.app
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3:8b}
+      - REDIS_URL=${REDIS_URL}
+    volumes:
+      - /opt/motia:/opt/motia:ro
+      - /opt/motia/workspaces:/work
+      # Uncomment if you want builder to access Docker
+      # - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-proxy
+      - billionmail_billionmail-network
+    ports:
+      - "127.0.0.1:4010:4010"

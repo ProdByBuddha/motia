@@ -1,0 +1,36 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: agents/self_adapt/Dockerfile
+    container_name: motia-builder
+    restart: unless-stopped
+    environment:
+      - WORK_DIR=/work/jobs
+      - ALLOW_SELF_MODIFY=0
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3:8b}
+      - REDIS_URL=redis://:${MOTIA_REDIS_PASSWORD}@motia-redis:6379
+      # Daytona sandboxing
+      - DAYTONA_API_URL=http://api:3000/api
+      - DAYTONA_API_KEY=${DAYTONA_API_KEY}
+      - DAYTONA_CREATE_PATH=sandbox
+      - DAYTONA_RUN_PATH_TEMPLATE=toolbox/{id}/toolbox/process/execute
+      - DAYTONA_DESTROY_PATH_TEMPLATE=sandbox/{id}
+    volumes:
+      - /opt/motia:/opt/motia:ro
+      - /opt/motia/workspaces:/work
+      # Uncomment if you want builder to access Docker
+      # - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-proxy
+      - daytona_daytona-network
+      - motia_default
+    ports:
+      - "127.0.0.1:4010:4010"
+
+networks:
+  daytona_daytona-network:
+    external: true
+  motia_default:
+    external: true

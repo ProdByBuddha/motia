@@ -1,0 +1,381 @@
+/**
+ * SuperQwen-Enhanced Parlant Integration
+ *
+ * Bridges Parlant (TypeScript/Node.js) with SuperQwen Framework for:
+ * - Conversational AI with context retention
+ * - Multi-turn dialogue management
+ * - Agent persona integration
+ * - Background task execution
+ */
+
+const fs = require('fs').promises;
+const path = require('path');
+const http = require('http');
+const https = require('https');
+const { URL } = require('url');
+
+// Parlant client for conversational AI
+// Note: This is a stub - actual Parlant import depends on version
+// const parlant = require('parlant');
+
+class SuperQwenParlant {
+  constructor(options = {}) {
+    this.mode = options.mode || 'conversational';
+    this.ollamaUrl = options.ollamaUrl || process.env.OLLAMA_HOST || process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+    this.model = options.model || process.env.OLLAMA_MODEL || 'qwen3:8b';
+    this.superqwenPath = options.superqwenPath || '/opt/motia/agents/superqwen';
+
+    this.conversationHistory = [];
+    this.currentPersona = null;
+    this.agents = {};
+    this.commands = {};
+    this.tools = [];
+
+    console.log('[SuperQwenParlant] Initialized');
+    console.log(`  Mode: ${this.mode}`);
+    console.log(`  Model: ${this.model}`);
+  }
+
+  // Remove any model-internal reasoning/thought content from user-facing text
+  stripReasoning(text) {
+    if (!text) return '';
+    let out = String(text);
+    // Drop <think>...</think> blocks
+    out = out.replace(/<think>[\s\S]*?<\/think>/gi, '');
+    // Drop leading "Thought:"/"Reasoning:" sections up to first blank line
+    out = out.replace(/^(?:\s*(?:Thoughts?|Reasoning|Analysis|Chain(?:\s*of\s*Thought)?)\s*:[\s\S]*?)(?:\n\s*\n|\r\n\r\n|$)/i, '');
+    return out.trim();
+  }
+
+  // Execute built-in tools by name
+  async execToolByName(name, args = {}) {
+    try {
+      switch (name) {
+        case 'ping':
+          return typeof args.msg === 'string' ? args.msg : 'pong';
+        case 'set_persona':
+          if (!args.persona) return 'error: missing persona';
+          this.setPersona(args.persona);
+          return `persona set: ${args.persona}`;
+        case 'list_agents':
+          return JSON.stringify({ agents: this.listAgents() });
+        case 'list_commands':
+          return JSON.stringify({ commands: this.listCommands() });
+        case 'get_stats':
+          return JSON.stringify(this.getStats());
+        case 'clear_conversation':
+          this.clearConversation();
+          return 'ok';
+        case 'execute_command':
+          // Stub: acknowledge. For rich execution, route to Python path.
+          return JSON.stringify({ status: 'stub', note: 'execute_command not implemented in Node bridge' });
+        default:
+          return `error: unknown tool ${name}`;
+      }
+    } catch (e) {
+      return `error: ${e.message || String(e)}`;
+    }
+  }
+
+  async loadSuperQwenComponents() {
+    console.log('[SuperQwenParlant] Loading SuperQwen components...');
+
+    // Load agent personas
+    const agentsDir = path.join(this.superqwenPath, '.qwen', 'agents');
+    try {
+      const files = await fs.readdir(agentsDir);
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const content = await fs.readFile(path.join(agentsDir, file), 'utf8');
+          const agentName = path.basename(file, '.md');
+          this.agents[agentName] = this.parseAgentFile(content);
+        }
+      }
+      console.log(`  Loaded ${Object.keys(this.agents).length} agents`);
+    } catch (err) {
+      console.error('  Failed to load agents:', err.message);
+    }
+
+    // Load command workflows
+    const commandsDir = path.join(this.superqwenPath, '.qwen', 'commands');
+    try {
+      const files = await fs.readdir(commandsDir);
+      for (const file of files) {
+        if (file.endsWith('.toml')) {
+          // Simple TOML parsing - in production use a proper TOML parser as needed
+          const content = await fs.readFile(path.join(commandsDir, file), 'utf8');
+          const cmdName = path.basename(file, '.toml');
+          this.commands[cmdName] = { content };
+        }
+      }
+      console.log(`  Loaded ${Object.keys(this.commands).length} commands`);
+    } catch (err) {
+      console.error('  Failed to load commands:', err.message);
+    }
+
+    // Build default tools from loaded agents and commands
+    const personas = Object.keys(this.agents);
+    const commands = Object.keys(this.commands);
+    this.tools = [
+      { type: 'function', function: { name: 'ping', description: 'Echo a message', parameters: { type: 'object', properties: { msg: { type: 'string' } }, required: ['msg'] } } },
+      { type: 'function', function: { name: 'set_persona', description: 'Activate a SuperQwen agent persona', parameters: { type: 'object', properties: { persona: { type: 'string', enum: personas } }, required: ['persona'] } } },
+      { type: 'function', function: { name: 'execute_command', description: 'Execute a SuperQwen command workflow', parameters: { type: 'object', properties: { command: { type: 'string', enum: commands }, context: { type: 'string' } }, required: ['command', 'context'] } } },
+      { type: 'function', function: { name: 'list_agents', description: 'List available SuperQwen agent personas', parameters: { type: 'object', properties: {} } } },
+      { type: 'function', function: { name: 'list_commands', description: 'List available SuperQwen commands', parameters: { type: 'object', properties: {} } } },
+      { type: 'function', function: { name: 'get_stats', description: 'Get current runtime statistics', parameters: { type: 'object', properties: {} } } },
+      { type: 'function', function: { name: 'clear_conversation', description: 'Clear the conversation history', parameters: { type: 'object', properties: {} } } }
+    ];
+    console.log(`[SuperQwenParlant] Built ${this.tools.length} default tools from loaded registries`);
+
+    // Optional tools.json override
+    try {
+      const toolsPathEnv = process.env.SUPERQWEN_TOOLS_JSON;
+      if (toolsPathEnv) {
+        const tcontent2 = await fs.readFile(toolsPathEnv, 'utf8');
+        const loaded = JSON.parse(tcontent2);
+        if (Array.isArray(loaded)) {
+          this.tools = loaded;
+          console.log(`[SuperQwenParlant] Loaded ${this.tools.length} tools from ${toolsPathEnv} (override)`);
+        }
+      }
+    } catch (err) {
+      console.warn('[SuperQwenParlant] Tools override failed:', err.message);
+    }
+  }
+
+  parseAgentFile(content) {
+    // Parse frontmatter and content from markdown
+    const lines = content.split('\n');
+    if (lines[0] === '---') {
+      const endIndex = lines.slice(1).findIndex(l => l === '---') + 1;
+      const frontmatter = lines.slice(1, endIndex).join('\n');
+      const body = lines.slice(endIndex + 1).join('\n');
+
+      // Simple YAML-like key: value parsing
+      const metadata = {};
+      frontmatter.split('\n').forEach(line => {
+        const m = line.match(/^(\w+):\s*(.+)$/);
+        if (m) metadata[m[1]] = m[2];
+      });
+      return { metadata, content: body };
+    }
+    return { metadata: {}, content };
+  }
+
+  setPersona(personaName) {
+    if (!this.agents[personaName]) {
+      throw new Error(`Unknown persona: ${personaName}`);
+    }
+    this.currentPersona = personaName;
+    const persona = this.agents[personaName];
+    if (this.mode === 'conversational') {
+      this.conversationHistory.push({
+        role: 'system',
+        content: `You are now acting as: ${persona.metadata.name || personaName}\n\n${persona.content}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+    console.log(`[SuperQwenParlant] Activated persona: ${personaName}`);
+    return persona;
+  }
+
+  async chat(message, options = {}) {
+    this.conversationHistory.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
+
+    const messages = [];
+    if (options.systemPrompt) messages.push({ role: 'system', content: options.systemPrompt });
+    for (const msg of this.conversationHistory) {
+      if (msg.role !== 'system' || !options.systemPrompt) messages.push({ role: msg.role, content: msg.content });
+    }
+
+    const response = await this.callOllama(messages, options);
+    this.conversationHistory.push({ role: 'assistant', content: response.content, timestamp: new Date().toISOString() });
+    return { content: response.content, conversationLength: this.conversationHistory.length, model: this.model };
+  }
+
+  clearConversation() {
+    this.conversationHistory = [];
+  }
+
+  getStats() {
+    return {
+      model: this.model,
+      mode: this.mode,
+      messages: this.conversationHistory.length,
+      personas: Object.keys(this.agents).length,
+      commands: Object.keys(this.commands).length
+    };
+  }
+
+  listAgents() {
+    return Object.keys(this.agents);
+  }
+
+  listCommands() {
+    return Object.keys(this.commands);
+  }
+
+  async executeCommand(commandName, context, options = {}) {
+    if (!this.commands[commandName]) throw new Error(`Unknown command: ${commandName}`);
+    const cmd = this.commands[commandName];
+    const fullPrompt = `${cmd.content}\n\n## Task\n\n${context}`;
+    if (this.mode === 'conversational') return await this.chat(fullPrompt, options);
+    const messages = [{ role: 'system', content: cmd.content }, { role: 'user', content: context }];
+    return await this.callOllama(messages, options);
+  }
+
+  async callOllama(messages, options = {}) {
+    const enableStreaming = options.stream === true ? true : false; // default off for Discord
+    const maxTokens = options.maxTokens || Number(process.env.DEFAULT_MAX_TOKENS || 1024);
+    const temperature = typeof options.temperature === 'number' ? options.temperature : Number(process.env.DEFAULT_TEMPERATURE || 0.7);
+
+    // Clone message history; we may append tool-call cycles
+    const history = Array.isArray(messages) ? messages.slice() : [];
+    const maxSteps = Number(process.env.MAX_TOOL_STEPS || 3);
+
+    const sendOnce = (msgs) => new Promise((resolve, reject) => {
+      const payload = {
+        model: this.model,
+        messages: msgs,
+        max_tokens: maxTokens,
+        temperature,
+        stream: enableStreaming
+      };
+      if (this.tools && this.tools.length > 0) {
+        payload.tools = this.tools;
+        payload.tool_choice = 'auto';
+      }
+
+      const postData = JSON.stringify(payload);
+      const endpoint = new URL('/v1/chat/completions', this.ollamaUrl);
+      const mod = endpoint.protocol === 'https:' ? https : http;
+      const req = mod.request({
+        hostname: endpoint.hostname,
+        port: endpoint.port || (endpoint.protocol === 'https:' ? 443 : 80),
+        path: endpoint.pathname + endpoint.search,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) }
+      }, (res) => {
+        let data = '';
+        res.on('data', (chunk) => { data += chunk; });
+        res.on('end', () => {
+          const ct = (res.headers && (res.headers['content-type'] || res.headers['Content-Type'])) || '';
+          const status = res.statusCode || 0;
+          if (status >= 400) {
+            const preview = String(data).slice(0, 300);
+            return reject(new Error(`Ollama API HTTP ${status}: ${preview}`));
+          }
+          const looksLikeSSE = ct.includes('text/event-stream') || String(data).trim().startsWith('data:');
+          if (looksLikeSSE) {
+            try {
+              let content = '';
+              const lines = String(data).split('\n');
+              for (const line of lines) {
+                if (!line.startsWith('data:')) continue;
+                const json = line.slice(5).trim();
+                if (!json || json === '[DONE]') continue;
+                try {
+                  const obj = JSON.parse(json);
+                  const choice = obj.choices && obj.choices[0];
+                  if (choice) {
+                    if (choice.delta && typeof choice.delta.content === 'string') content += choice.delta.content;
+                    else if (choice.message && typeof choice.message.content === 'string') content += choice.message.content;
+                  }
+                } catch (_) {}
+              }
+              return resolve({ choices: [{ message: { role: 'assistant', content } }], model: this.model, usage: {} });
+            } catch (e) {
+              const preview = String(data).slice(0, 300);
+              return reject(new Error(`Failed to parse SSE response: ${e.message} | preview: ${preview}`));
+            }
+          }
+          try {
+            const result = JSON.parse(data);
+            return resolve(result);
+          } catch (err) {
+            const preview = String(data).slice(0, 300);
+            return reject(new Error(`Failed to parse Ollama response: ${err.message} | preview: ${preview}`));
+          }
+        });
+      });
+      req.on('error', (err) => reject(new Error(`Ollama API error: ${err.message}`)));
+      req.write(postData);
+      req.end();
+    });
+
+    for (let step = 0; step < maxSteps; step++) {
+      const result = await sendOnce(history);
+      const choice = result && result.choices && Array.isArray(result.choices) ? result.choices[0] : null;
+      const message = choice && choice.message ? choice.message : {};
+      const toolCalls = message && Array.isArray(message.tool_calls) ? message.tool_calls : [];
+      const content = message.content || '';
+
+      if (toolCalls.length > 0) {
+        // Add assistant message with tool_calls
+        history.push({ role: 'assistant', content: content || '', tool_calls: toolCalls });
+        for (const tc of toolCalls) {
+          if (!tc || !tc.function) continue;
+          const name = tc.function.name;
+          let args = {};
+          try { args = tc.function.arguments ? JSON.parse(tc.function.arguments) : {}; } catch (_) { args = {}; }
+          const out = await this.execToolByName(name, args);
+          const toolMsg = { role: 'tool', content: typeof out === 'string' ? out : JSON.stringify(out) };
+          if (tc.id) toolMsg.tool_call_id = tc.id;
+          history.push(toolMsg);
+        }
+        // Continue loop to get final assistant answer
+        continue;
+      }
+
+      // No tool calls; finalize
+      const finalText = this.stripReasoning(content);
+      return { content: finalText, usage: result.usage || {}, model: result.model || this.model };
+    }
+
+    return { content: '[error] tool-call loop exceeded', usage: {}, model: this.model };
+  }
+}
+
+// HTTP server for Python bridge
+function createBridgeServer(port = 3000) {
+  const agent = new SuperQwenParlant({ mode: 'conversational' });
+  agent.loadSuperQwenComponents().then(() => {
+    const server = http.createServer(async (req, res) => {
+      if (req.method !== 'POST') { res.writeHead(405, { 'Content-Type': 'text/plain' }); return res.end('Method Not Allowed'); }
+      let body = '';
+      req.on('data', chunk => { body += chunk.toString(); });
+      req.on('end', async () => {
+        try {
+          const data = JSON.parse(body); let result;
+          switch (data.action) {
+            case 'chat': result = await agent.chat(data.message, data.options || {}); break;
+            case 'executeCommand': result = await agent.executeCommand(data.command, data.context, data.options || {}); break;
+            case 'setPersona': result = agent.setPersona(data.persona); break;
+            case 'clearConversation': agent.clearConversation(); result = { success: true }; break;
+            case 'getStats': result = agent.getStats(); break;
+            case 'listAgents': result = { agents: agent.listAgents() }; break;
+            case 'listCommands': result = { commands: agent.listCommands() }; break;
+            default: throw new Error(`Unknown action: ${data.action}`);
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true, result }));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+      });
+    });
+    server.listen(port, () => {
+      console.log(`[SuperQwenParlant] Bridge server listening on port ${port}`);
+      console.log('  Available agents:', agent.listAgents().join(', '));
+      console.log('  Available commands:', agent.listCommands().join(', '));
+    });
+  });
+}
+
+module.exports = { SuperQwenParlant, createBridgeServer };
+
+if (require.main === module) {
+  const port = Number(process.env.PORT || 3000);
+  createBridgeServer(port);
+}

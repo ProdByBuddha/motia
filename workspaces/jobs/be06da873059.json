@@ -1,0 +1,1 @@
+{"id": "be06da873059", "kind": "propose_patch", "status": "tested", "created_at": 1760682313, "updated_at": 1760682368, "payload": {"base_path": "/opt/motia/agents", "description": "noop"}, "result": {"ok": true, "logs": ["no recognizable files found for checks; skipping"]}}

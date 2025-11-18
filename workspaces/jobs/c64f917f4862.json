@@ -1,0 +1,1 @@
+{"id": "c64f917f4862", "kind": "propose_patch", "status": "staged", "created_at": 1760685020, "updated_at": 1760685020, "payload": {"base_path": "/opt/motia/agents", "description": "daytona test"}, "result": {"workspace": "/work/jobs/c64f917f4862", "applied": [], "errors": []}}

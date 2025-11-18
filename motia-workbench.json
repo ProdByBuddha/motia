@@ -1,0 +1,285 @@
+[
+  {
+    "id": "data-management",
+    "config": {
+      "steps/agents/event-stream-agent.step.ts": {
+        "x": 0,
+        "y": 0
+      },
+      "steps/agents/database-optimizer-agent.step.ts": {
+        "x": 0,
+        "y": 244
+      },
+      "steps/agents/data-pipeline-agent.step.ts": {
+        "x": 0,
+        "y": 488
+      },
+      "steps/agents/cache-strategy-agent.step.ts": {
+        "x": 0,
+        "y": 712
+      },
+      "steps/agents/archive-manager-agent.step.ts": {
+        "x": 0,
+        "y": 956
+      }
+    }
+  },
+  {
+    "id": "vps-orchestration",
+    "config": {
+      "steps/workflows/execute-workflow.step.ts": {
+        "x": 5,
+        "y": -9
+      },
+      "steps/vps/service-event.step.ts": {
+        "x": 25,
+        "y": 205
+      },
+      "steps/vps/redis-test.step.ts": {
+        "x": 66,
+        "y": 360
+      },
+      "steps/vps/redis-set.step.ts": {
+        "x": 62,
+        "y": 564
+      },
+      "steps/vps/redis-get.step.ts": {
+        "x": 57,
+        "y": 768
+      },
+      "steps/vps/postgres-query.step.ts": {
+        "x": 0,
+        "y": 972
+      },
+      "steps/vps/ollama-generate.step.ts": {
+        "x": 43,
+        "y": 1196
+      },
+      "steps/vps/health.step.ts": {
+        "x": 0,
+        "y": 1400
+      },
+      "steps/vps/health-monitor.step.ts": {
+        "x": 38,
+        "y": 1624
+      },
+      "steps/system/register-workflows.step.ts": {
+        "x": 0,
+        "y": 1824
+      },
+      "steps/agents/vulnerability-scanner-agent.step.ts": {
+        "x": 0,
+        "y": 2048
+      },
+      "steps/agents/vault-cluster-monitor-agent.step.ts": {
+        "x": 0,
+        "y": 2292
+      },
+      "steps/agents/traffic-manager-agent.step.ts": {
+        "x": 0,
+        "y": 2536
+      },
+      "steps/agents/trace-agent.step.ts": {
+        "x": 0,
+        "y": 2780
+      },
+      "steps/agents/threat-intelligence-agent.step.ts": {
+        "x": 0,
+        "y": 3004
+      },
+      "steps/agents/testing-agent.step.ts": {
+        "x": 0,
+        "y": 3248
+      },
+      "steps/agents/synthesis-agent.step.ts": {
+        "x": 0,
+        "y": 3472
+      },
+      "steps/agents/summarization-agent.step.ts": {
+        "x": 0,
+        "y": 3696
+      },
+      "steps/agents/slo-sli-agent.step.ts": {
+        "x": 0,
+        "y": 3940
+      },
+      "steps/agents/service-mesh-agent.step.ts": {
+        "x": 0,
+        "y": 4164
+      },
+      "steps/agents/service-health-agent.step.ts": {
+        "x": 0,
+        "y": 4408
+      },
+      "steps/agents/service-discovery-agent.step.ts": {
+        "x": 0,
+        "y": 4632
+      },
+      "steps/agents/secret-rotation-agent.step.ts": {
+        "x": 0,
+        "y": 4876
+      },
+      "steps/agents/research-agent.step.ts": {
+        "x": 0,
+        "y": 5120
+      },
+      "steps/agents/planning-agent.step.ts": {
+        "x": 0,
+        "y": 5344
+      },
+      "steps/agents/performance-monitor-agent.step.ts": {
+        "x": 0,
+        "y": 5568
+      },
+      "steps/agents/network-analyzer-agent.step.ts": {
+        "x": 0,
+        "y": 5812
+      },
+      "steps/agents/metrics-agent.step.ts": {
+        "x": 0,
+        "y": 6056
+      },
+      "steps/agents/log-rotation-agent.step.ts": {
+        "x": 0,
+        "y": 6280
+      },
+      "steps/agents/log-analysis-agent.step.ts": {
+        "x": 0,
+        "y": 6504
+      },
+      "steps/agents/intrusion-detection-agent.step.ts": {
+        "x": 0,
+        "y": 6748
+      },
+      "steps/agents/infrastructure-as-code-agent.step.ts": {
+        "x": 0,
+        "y": 6992
+      },
+      "steps/agents/firewall-manager-agent.step.ts": {
+        "x": 0,
+        "y": 7236
+      },
+      "steps/agents/event-stream-agent.step.ts": {
+        "x": 0,
+        "y": 7460
+      },
+      "steps/agents/domain-research-agent.step.ts": {
+        "x": 0,
+        "y": 7704
+      },
+      "steps/agents/documentation-agent.step.ts": {
+        "x": 0,
+        "y": 7948
+      },
+      "steps/agents/disk-cleanup-agent.step.ts": {
+        "x": 0,
+        "y": 8192
+      },
+      "steps/agents/design-review-agent.step.ts": {
+        "x": 0,
+        "y": 8436
+      },
+      "steps/agents/deployment-strategy-agent.step.ts": {
+        "x": 0,
+        "y": 8680
+      },
+      "steps/agents/deep-research-agent.step.ts": {
+        "x": 0,
+        "y": 8924
+      },
+      "steps/agents/database-optimizer-agent.step.ts": {
+        "x": 0,
+        "y": 9168
+      },
+      "steps/agents/data-pipeline-agent.step.ts": {
+        "x": 0,
+        "y": 9412
+      },
+      "steps/agents/dashboard-agent.step.ts": {
+        "x": 0,
+        "y": 9636
+      },
+      "steps/agents/coordinator-agent.step.ts": {
+        "x": 0,
+        "y": 9860
+      },
+      "steps/agents/content-generation-agent.step.ts": {
+        "x": 0,
+        "y": 10104
+      },
+      "steps/agents/container-security-agent.step.ts": {
+        "x": 0,
+        "y": 10328
+      },
+      "steps/agents/container-build-agent.step.ts": {
+        "x": 0,
+        "y": 10552
+      },
+      "steps/agents/configuration-management-agent.step.ts": {
+        "x": 0,
+        "y": 10776
+      },
+      "steps/agents/code-review-agent.step.ts": {
+        "x": 0,
+        "y": 11020
+      },
+      "steps/agents/code-generation-agent.step.ts": {
+        "x": 0,
+        "y": 11264
+      },
+      "steps/agents/cicd-pipeline-agent.step.ts": {
+        "x": 0,
+        "y": 11508
+      },
+      "steps/agents/cache-strategy-agent.step.ts": {
+        "x": 0,
+        "y": 11732
+      },
+      "steps/agents/business-panel-agent.step.ts": {
+        "x": 0,
+        "y": 11976
+      },
+      "steps/agents/billionmail-monitor-agent.step.ts": {
+        "x": 0,
+        "y": 12220
+      },
+      "steps/agents/backup-manager-agent.step.ts": {
+        "x": 0,
+        "y": 12464
+      },
+      "steps/agents/archive-manager-agent.step.ts": {
+        "x": 0,
+        "y": 12708
+      },
+      "steps/agents/api-gateway-agent.step.ts": {
+        "x": 0,
+        "y": 12952
+      },
+      "steps/agents/anomaly-detection-agent.step.ts": {
+        "x": 0,
+        "y": 13176
+      },
+      "steps/agents/analysis-agent.step.ts": {
+        "x": 0,
+        "y": 13420
+      },
+      "steps/agents/alert-correlation-agent.step.ts": {
+        "x": 0,
+        "y": 13644
+      },
+      "steps/agents/a2a-communication-agent.step.ts": {
+        "x": 0,
+        "y": 13888
+      }
+    }
+  },
+  {
+    "id": "cron-example",
+    "config": {
+      "steps/vps/test.step.ts": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  }
+]

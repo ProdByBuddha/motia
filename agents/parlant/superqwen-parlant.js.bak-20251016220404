@@ -1,0 +1,584 @@
+/**
+ * SuperQwen-Enhanced Parlant Integration
+ *
+ * Bridges Parlant (TypeScript/Node.js) with SuperQwen Framework for:
+ * - Conversational AI with context retention
+ * - Multi-turn dialogue management
+ * - Agent persona integration
+ * - Background task execution
+ */
+
+const fs = require('fs').promises;
+const path = require('path');
+const http = require('http');
+const https = require('https');
+const { URL } = require('url');
+const parlant = require('parlant'); // imported for future use
+
+const DEFAULT_MAX_TOKENS = Number(process.env.OLLAMA_MAX_TOKENS || 512);
+const DEFAULT_TEMPERATURE = Number(process.env.OLLAMA_TEMPERATURE || 0.2);
+
+const sessions = new Map(); // sessionId -> { agent, meta }
+const sessionMeta = new Map(); // sessionId -> { name, createdAt }
+
+async function getAgentForSession(sessionId) {
+  let entry = sessions.get(sessionId);
+  if (!entry) {
+    const agent = new SuperQwenParlant({ mode: 'conversational' });
+    await agent.loadSuperQwenComponents();
+    entry = { agent };
+    sessions.set(sessionId, entry);
+    if (!sessionMeta.has(sessionId)) {
+      sessionMeta.set(sessionId, { name: 'default', createdAt: new Date().toISOString() });
+    }
+  } else if (!entry.agent._loaded) {
+    await entry.agent.loadSuperQwenComponents();
+  }
+  entry.agent._loaded = true;
+  return entry.agent;
+}
+
+class SuperQwenParlant {
+  constructor(options = {}) {
+    this.mode = options.mode || 'conversational';
+    this.ollamaUrl =
+      options.ollamaUrl ||
+      process.env.OLLAMA_HOST ||
+      process.env.OLLAMA_BASE_URL ||
+      'http://localhost:11434';
+    this.model = options.model || process.env.OLLAMA_MODEL || 'qwen3:8b';
+    this.superqwenPath = options.superqwenPath || '/opt/motia/agents/superqwen';
+
+    this.conversationHistory = [];
+    this.currentPersona = null;
+    this.agents = {};
+    this.commands = {};
+    this.tools = [];
+
+    console.log('[SuperQwenParlant] Initialized');
+    console.log(`  Mode: ${this.mode}`);
+    console.log(`  Model: ${this.model}`);
+  }
+
+  execTool(name, args = {}) {
+    try {
+      if (name === 'ping') {
+        return JSON.stringify({ ok: true, echo: args.msg });
+      }
+      if (name === 'set_persona') {
+        this.setPersona(args.persona);
+        return JSON.stringify({ ok: true, persona: args.persona });
+      }
+      if (name === 'set_mode') {
+        if (['conversational', 'background'].includes(args.mode)) {
+          this.mode = args.mode;
+          return JSON.stringify({ ok: true, mode: args.mode });
+        }
+        return JSON.stringify({ ok: false, error: 'invalid mode' });
+      }
+      if (name === 'list_agents') {
+        return JSON.stringify({ ok: true, agents: this.listAgents() });
+      }
+      if (name === 'list_commands') {
+        return JSON.stringify({ ok: true, commands: this.listCommands() });
+      }
+      if (name === 'get_stats') {
+        return JSON.stringify({ ok: true, stats: this.getStats() });
+      }
+      if (name === 'clear_conversation') {
+        this.clearConversation();
+        return JSON.stringify({ ok: true, cleared: true });
+      }
+      if (name === 'execute_command') {
+        return JSON.stringify({
+          ok: true,
+          note: 'execute_command not implemented in Node bridge; prefer Python path',
+        });
+      }
+      return JSON.stringify({ ok: false, error: `unsupported tool: ${name}` });
+    } catch (e) {
+      return JSON.stringify({ ok: false, error: String(e.message || e) });
+    }
+  }
+
+  async loadSuperQwenComponents() {
+    console.log('[SuperQwenParlant] Loading SuperQwen components...');
+
+    // Load agent personas
+    const agentsDir = path.join(this.superqwenPath, '.qwen', 'agents');
+    try {
+      const files = await fs.readdir(agentsDir);
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const content = await fs.readFile(path.join(agentsDir, file), 'utf8');
+          const agentName = path.basename(file, '.md');
+          this.agents[agentName] = this.parseAgentFile(content);
+        }
+      }
+      console.log(`  Loaded ${Object.keys(this.agents).length} agents`);
+    } catch (err) {
+      console.error('  Failed to load agents:', err.message);
+    }
+
+    // Load command workflows
+    const commandsDir = path.join(this.superqwenPath, '.qwen', 'commands');
+    try {
+      const files = await fs.readdir(commandsDir);
+      for (const file of files) {
+        if (file.endsWith('.toml')) {
+          // Simple TOML ingestion — consider a real parser in prod
+          const content = await fs.readFile(path.join(commandsDir, file), 'utf8');
+          const cmdName = path.basename(file, '.toml');
+          this.commands[cmdName] = { content };
+        }
+      }
+      console.log(`  Loaded ${Object.keys(this.commands).length} commands`);
+    } catch (err) {
+      console.error('  Failed to load commands:', err.message);
+    }
+
+    // Build default tools from loaded agents and commands
+    const personas = Object.keys(this.agents);
+    const commands = Object.keys(this.commands);
+    this.tools = [
+      {
+        type: 'function',
+        function: {
+          name: 'ping',
+          description: 'Echo a message',
+          parameters: { type: 'object', properties: { msg: { type: 'string' } }, required: ['msg'] },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'set_persona',
+          description: 'Activate a SuperQwen agent persona',
+          parameters: {
+            type: 'object',
+            properties: { persona: { type: 'string', enum: personas } },
+            required: ['persona'],
+          },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'execute_command',
+          description: 'Execute a SuperQwen command workflow',
+          parameters: {
+            type: 'object',
+            properties: { command: { type: 'string', enum: commands }, context: { type: 'string' } },
+            required: ['command', 'context'],
+          },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'list_agents',
+          description: 'List available SuperQwen agent personas',
+          parameters: { type: 'object', properties: {} },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'list_commands',
+          description: 'List available SuperQwen commands',
+          parameters: { type: 'object', properties: {} },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'get_stats',
+          description: 'Get current runtime statistics',
+          parameters: { type: 'object', properties: {} },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'clear_conversation',
+          description: 'Clear the conversation history',
+          parameters: { type: 'object', properties: {} },
+        },
+      },
+    ];
+    console.log(`[SuperQwenParlant] Built ${this.tools.length} default tools from loaded registries`);
+
+    // Optional tools.json override
+    try {
+      const toolsPathEnv = process.env.SUPERQWEN_TOOLS_JSON;
+      if (toolsPathEnv) {
+        const tcontent2 = await fs.readFile(toolsPathEnv, 'utf8');
+        const loaded = JSON.parse(tcontent2);
+        if (Array.isArray(loaded)) {
+          this.tools = loaded;
+          console.log(
+            `[SuperQwenParlant] Loaded ${this.tools.length} tools from ${toolsPathEnv} (override)`
+          );
+        }
+      }
+    } catch (err) {
+      console.warn('[SuperQwenParlant] Tools override failed:', err.message);
+    }
+  }
+
+  parseAgentFile(content) {
+    // Parse frontmatter and content from markdown
+    const lines = content.split('\n');
+    if (lines[0] === '---') {
+      const endIndex = lines.slice(1).findIndex((l) => l === '---') + 1;
+      const frontmatter = lines.slice(1, endIndex).join('\n');
+      const body = lines.slice(endIndex + 1).join('\n');
+
+      // Simple YAML-like key: value parsing
+      const metadata = {};
+      frontmatter.split('\n').forEach((line) => {
+        const m = line.match(/^(\w+):\s*(.+)$/);
+        if (m) metadata[m[1]] = m[2];
+      });
+      return { metadata, content: body };
+    }
+    return { metadata: {}, content };
+  }
+
+  setPersona(personaName) {
+    if (!this.agents[personaName]) {
+      throw new Error(`Unknown persona: ${personaName}`);
+    }
+    this.currentPersona = personaName;
+    const persona = this.agents[personaName];
+    if (this.mode === 'conversational') {
+      this.conversationHistory.push({
+        role: 'system',
+        content: `You are now acting as: ${persona.metadata.name || personaName}\n\n${persona.content}`,
+        timestamp: new Date().toISOString(),
+      });
+    }
+    console.log(`[SuperQwenParlant] Activated persona: ${personaName}`);
+    return persona;
+  }
+
+  listAgents() {
+    return Object.keys(this.agents);
+  }
+
+  listCommands() {
+    return Object.keys(this.commands);
+  }
+
+  getStats() {
+    return {
+      mode: this.mode,
+      model: this.model,
+      persona: this.currentPersona,
+      turns: this.conversationHistory.length,
+      tools: (this.tools || []).length,
+    };
+  }
+
+  clearConversation() {
+    this.conversationHistory = [];
+  }
+
+  async chat(message, options = {}) {
+    this.conversationHistory.push({
+      role: 'user',
+      content: message,
+      timestamp: new Date().toISOString(),
+    });
+
+    const messages = [];
+    if (options.systemPrompt) messages.push({ role: 'system', content: options.systemPrompt });
+    for (const msg of this.conversationHistory) {
+      if (msg.role !== 'system' || !options.systemPrompt) {
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    }
+
+    const response = await this.callOllama(messages, options);
+    if (response.content) {
+      this.conversationHistory.push({
+        role: 'assistant',
+        content: response.content,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const tc = response.tool_calls || [];
+    if (tc.length > 0) {
+      // Execute each tool and feed back
+      const follow = [];
+      for (const call of tc) {
+        const f = call.function || {};
+        const name = f.name;
+        let args = {};
+        try {
+          args = JSON.parse(f.arguments || '{}');
+        } catch (_) {}
+        const result = this.execTool(name || '', args);
+        follow.push({ role: 'tool', content: result });
+      }
+      // Append tool messages and do a follow-up
+      this.conversationHistory.push(...follow);
+      const messages2 = [];
+      if (options.systemPrompt) {
+        messages2.push({ role: 'system', content: options.systemPrompt });
+      }
+      for (const m of this.conversationHistory) {
+        if (m.role !== 'system' || !options.systemPrompt) {
+          messages2.push({ role: m.role, content: m.content });
+        }
+      }
+      const response2 = await this.callOllama(messages2, options);
+      if (response2.content) {
+        this.conversationHistory.push({
+          role: 'assistant',
+          content: response2.content,
+          timestamp: new Date().toISOString(),
+        });
+        return {
+          content: response2.content,
+          conversationLength: this.conversationHistory.length,
+          model: this.model,
+        };
+      }
+    }
+    return {
+      content: response.content,
+      conversationLength: this.conversationHistory.length,
+      model: this.model,
+    };
+  }
+
+  async executeCommand(commandName, context, options = {}) {
+    if (!this.commands[commandName]) throw new Error(`Unknown command: ${commandName}`);
+    const cmd = this.commands[commandName];
+    const fullPrompt = `${cmd.content}\n\n## Task\n\n${context}`;
+    if (this.mode === 'conversational') return await this.chat(fullPrompt, options);
+    const messages = [
+      { role: 'system', content: cmd.content },
+      { role: 'user', content: context },
+    ];
+    return await this.callOllama(messages, options);
+  }
+
+  async callOllama(messages, options = {}) {
+    const payload = {
+      model: this.model,
+      messages,
+      options: {
+        num_predict:
+          typeof options.maxTokens === 'number' ? options.maxTokens : DEFAULT_MAX_TOKENS,
+        temperature:
+          typeof options.temperature === 'number' ? options.temperature : DEFAULT_TEMPERATURE,
+      },
+      stream: process.env.ENABLE_STREAMING === '1',
+    };
+
+    // Attach tools if available
+    if (this.tools && this.tools.length > 0) {
+      payload.tools = this.tools;
+      payload.tool_choice = 'auto';
+    }
+
+    return new Promise((resolve, reject) => {
+      const postData = JSON.stringify(payload);
+      const endpoint = new URL('/v1/chat/completions', this.ollamaUrl);
+      const mod = endpoint.protocol === 'https:' ? https : http;
+
+      const req = mod.request(
+        {
+          hostname: endpoint.hostname,
+          port: endpoint.port || (endpoint.protocol === 'https:' ? 443 : 80),
+          path: endpoint.pathname + endpoint.search,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData),
+          },
+        },
+        (res) => {
+          let data = '';
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+          res.on('end', () => {
+            try {
+              const result = JSON.parse(data);
+              if (!result || !result.choices || !result.choices[0] || !result.choices[0].message) {
+                const errMsg =
+                  result && result.error && result.error.message
+                    ? result.error.message
+                    : String(data).slice(0, 200);
+                return resolve({
+                  content: `[error] ${errMsg}`,
+                  error: (result && result.error) || null,
+                  raw: result,
+                  tool_calls: [],
+                });
+              }
+              const msg = result.choices[0].message;
+              resolve({
+                content: msg.content || '',
+                usage: result.usage || {},
+                model: result.model,
+                tool_calls: msg.tool_calls || [],
+              });
+            } catch (err) {
+              reject(new Error(`Failed to parse Ollama response: ${err.message}`));
+            }
+          });
+        }
+      );
+
+      req.on('error', (err) => reject(new Error(`Ollama API error: ${err.message}`)));
+      req.write(postData);
+      req.end();
+    });
+  }
+}
+
+// HTTP server for Python bridge
+function createBridgeServer(port = parseInt(process.env.PORT || '3000', 10)) {
+  const server = http.createServer(async (req, res) => {
+    if (req.method !== 'POST') {
+      res.writeHead(405, { 'Content-Type': 'text/plain' });
+      return res.end('Method Not Allowed');
+    }
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const data = JSON.parse(body);
+        const sessionId = data.sessionId || data.session_id || 'default';
+
+        // Session management actions
+        if (data.action === 'sessionNew') {
+          const sid = data.name || `sess_${Date.now()}`;
+          if (!sessions.has(sid)) {
+            const agent = new SuperQwenParlant({ mode: 'conversational' });
+            await agent.loadSuperQwenComponents();
+            sessions.set(sid, { agent });
+            sessionMeta.set(sid, {
+              name: data.name || 'untitled',
+              createdAt: new Date().toISOString(),
+            });
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(
+            JSON.stringify({
+              success: true,
+              result: { id: sid, meta: sessionMeta.get(sid) },
+            })
+          );
+        }
+        if (data.action === 'sessionList') {
+          const list = [];
+          for (const [sid, meta] of sessionMeta.entries()) {
+            list.push({
+              id: sid,
+              ...meta,
+              messages:
+                (sessions.get(sid)?.agent?.conversationHistory?.length || 0),
+            });
+          }
+          list.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: true, result: { sessions: list } }));
+        }
+        if (data.action === 'sessionUse') {
+          // Ensure it exists
+          await getAgentForSession(sessionId);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(
+            JSON.stringify({
+              success: true,
+              result: { id: sessionId, meta: sessionMeta.get(sessionId) },
+            })
+          );
+        }
+        if (data.action === 'sessionRename') {
+          const newName = data.newName || data.name;
+          if (!newName) throw new Error('newName is required');
+          const meta = sessionMeta.get(sessionId) || {};
+          meta.name = newName;
+          sessionMeta.set(sessionId, meta);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: true, result: { id: sessionId, meta } }));
+        }
+        if (data.action === 'sessionClose') {
+          sessions.delete(sessionId);
+          sessionMeta.delete(sessionId);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: true, result: { closed: sessionId } }));
+        }
+
+        // Conversational actions
+        const agent = await getAgentForSession(sessionId);
+
+        let result;
+        switch (data.action) {
+          case 'chat':
+            result = await agent.chat(data.message, data.options || {});
+            break;
+          case 'executeCommand':
+            result = await agent.executeCommand(
+              data.command,
+              data.context,
+              data.options || {}
+            );
+            break;
+          case 'setPersona':
+            result = agent.setPersona(data.persona);
+            break;
+          case 'clearConversation':
+            agent.clearConversation();
+            result = { success: true };
+            break;
+          case 'getStats':
+            result = agent.getStats();
+            break;
+          case 'listAgents':
+            result = { agents: agent.listAgents() };
+            break;
+          case 'listCommands':
+            result = { commands: agent.listCommands() };
+            break;
+          default:
+            throw new Error(`Unknown action: ${data.action}`);
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, result }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({ success: false, error: (err && err.message) || String(err) })
+        );
+      }
+    });
+  });
+
+  server.listen(port, '127.0.0.1', () => {
+    console.log(`[SuperQwenParlant] Bridge server listening on port ${port}`);
+    // Optional: log a snapshot of sessions
+    console.log(
+      '  Sessions:',
+      Array.from(sessionMeta.entries())
+        .map(([k, v]) => `${k}:${v.name}`)
+        .join(', ')
+    );
+  });
+}
+
+module.exports = { SuperQwenParlant, createBridgeServer };
+
+if (require.main === module) {
+  createBridgeServer(3010);
+}

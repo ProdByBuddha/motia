@@ -1,0 +1,112 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "ping",
+      "description": "Echo a message",
+      "parameters": {
+        "type": "object",
+        "properties": {"msg": {"type": "string"}},
+        "required": ["msg"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_persona",
+      "description": "Activate a SuperQwen agent persona",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "persona": {"type": "string"}
+        },
+        "required": ["persona"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_mode",
+      "description": "Switch between conversational and background modes",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mode": {"type": "string", "enum": ["conversational", "background"]}
+        },
+        "required": ["mode"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "execute_command",
+      "description": "Execute a SuperQwen command workflow",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {"type": "string"},
+          "context": {"type": "string"}
+        },
+        "required": ["command", "context"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_agents",
+      "description": "List available SuperQwen agent personas",
+      "parameters": {"type": "object", "properties": {}}
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_commands",
+      "description": "List available SuperQwen commands",
+      "parameters": {"type": "object", "properties": {}}
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_stats",
+      "description": "Get current runtime statistics",
+      "parameters": {"type": "object", "properties": {}}
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "clear_conversation",
+      "description": "Clear the conversation history",
+      "parameters": {"type": "object", "properties": {}}
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "save_conversation",
+      "description": "Save conversation history to a file",
+      "parameters": {
+        "type": "object",
+        "properties": {"path": {"type": "string"}},
+        "required": ["path"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "load_conversation",
+      "description": "Load conversation history from a file",
+      "parameters": {
+        "type": "object",
+        "properties": {"path": {"type": "string"}},
+        "required": ["path"
+      }
+    }
+  },

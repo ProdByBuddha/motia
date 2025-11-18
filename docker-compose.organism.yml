@@ -1,0 +1,133 @@
+# Organism - Living Infrastructure Platform
+# Complete stack with dedicated PostgreSQL, Redis, and GCP Secret Manager integration
+
+services:
+  # Organism PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: organism-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=organism
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_DB=organism
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - organism-postgres-data:/var/lib/postgresql/data
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U organism"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    secrets:
+      - postgres_password
+
+  # Organism Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: organism-redis
+    restart: unless-stopped
+    command: sh -c 'redis-server --requirepass "$$(cat /run/secrets/redis_password)"'
+    volumes:
+      - organism-redis-data:/data
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    secrets:
+      - redis_password
+
+  # Organism Agent Platform
+  motia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: organism
+    restart: unless-stopped
+    working_dir: /app
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          memory: 1G
+    environment:
+      - NODE_ENV=production
+      - MOTIA_PORT=3000
+      - MOTIA_HOST=0.0.0.0
+      # Organism PostgreSQL
+      - POSTGRES_HOST=organism-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=organism
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_DB=organism
+      # Organism Redis
+      - REDIS_HOST=organism-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD_FILE=/run/secrets/redis_password
+      # Ollama Cloud (not local!)
+      - OLLAMA_HOST=https://ollama.com
+      - OLLAMA_API_KEY_FILE=/run/secrets/ollama_api_key
+      - OLLAMA_BASE_URL=https://ollama.com
+      # Organism Services
+      - NATS_URL=nats://nats-digestive:4222
+      - MINIO_ENDPOINT=minio-digestive:9000
+      - CONSUL_HTTP_ADDR=consul-organism:8500
+      # Service Info
+      - SERVICE_NAME=Organism
+      - SERVICE_VERSION=1.0
+      - SERVICE_AGENTS=51
+      - SERVICE_SYSTEMS=7
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - default
+      - traefik-proxy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    secrets:
+      - postgres_password
+      - redis_password
+      - ollama_api_key
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.organism-hq.rule=Host(`hq.iameternalzion.com`)"
+      - "traefik.http.routers.organism-hq.entrypoints=websecure"
+      - "traefik.http.routers.organism-hq.tls.certresolver=cloudflare"
+      - "traefik.http.services.organism-hq.loadbalancer.server.port=3000"
+      # ORGANISM Metadata
+      - "organism.version=1.0"
+      - "organism.agents=51"
+      - "organism.systems=7"
+      - "organism.models=deepseek-v3.1:671b,qwen3-coder:480b,gpt-oss:120b,gpt-oss:20b"
+
+# Docker Secrets (populated from GCP Secret Manager)
+secrets:
+  postgres_password:
+    file: /opt/secrets/organism-postgres-password.txt
+  redis_password:
+    file: /opt/secrets/organism-redis-password.txt
+  ollama_api_key:
+    file: /opt/secrets/organism-ollama-api-key.txt
+
+volumes:
+  organism-postgres-data:
+    driver: local
+  organism-redis-data:
+    driver: local
+
+networks:
+  traefik-proxy:
+    external: true

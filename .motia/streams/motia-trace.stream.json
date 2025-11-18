@@ -1,0 +1,2627 @@
+{
+  "DWZZM-9300259:5e0ef00b-7350-44d5-8c11-d6bf831bc3b7": {
+    "id": "5e0ef00b-7350-44d5-8c11-d6bf831bc3b7",
+    "name": "HealthMonitor",
+    "parentTraceId": "DWZZM-9300259",
+    "status": "completed",
+    "startTime": 1763409300521,
+    "endTime": 1763409312786,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763409302960,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "DWZZM-9300259",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763409301256,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763409302962,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "DWZZM-9300259",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763409301420,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "B9HQY-9600762:0ff6f235-992c-42ec-921f-499c03b9ba29": {
+    "id": "0ff6f235-992c-42ec-921f-499c03b9ba29",
+    "name": "HandlePeriodicJob",
+    "parentTraceId": "B9HQY-9600762",
+    "status": "completed",
+    "startTime": 1763409601126,
+    "endTime": 1763409615448,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HandlePeriodicJob"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763409604272,
+        "level": "info",
+        "message": "Periodic job executed",
+        "metadata": {
+          "traceId": "B9HQY-9600762",
+          "flows": [
+            "cron-example"
+          ],
+          "step": "HandlePeriodicJob",
+          "level": "info",
+          "time": 1763409601924,
+          "msg": "Periodic job executed"
+        }
+      },
+      {
+        "type": "emit",
+        "timestamp": 1763409604273,
+        "topic": "periodic-job-handled",
+        "success": true,
+        "data": {
+          "message": "Periodic job executed"
+        }
+      }
+    ]
+  },
+  "PB3EZ-9900097:4bb54623-ac31-4424-bde6-101390a4f394": {
+    "id": "4bb54623-ac31-4424-bde6-101390a4f394",
+    "name": "HealthMonitor",
+    "parentTraceId": "PB3EZ-9900097",
+    "status": "completed",
+    "startTime": 1763409900428,
+    "endTime": 1763409912638,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763409903072,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "PB3EZ-9900097",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763409901224,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763409903072,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "PB3EZ-9900097",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763409901411,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "S6E7Q-0200799:ff9d3230-a624-4a35-9135-e1ec34a61877": {
+    "id": "ff9d3230-a624-4a35-9135-e1ec34a61877",
+    "name": "HealthMonitor",
+    "parentTraceId": "S6E7Q-0200799",
+    "status": "completed",
+    "startTime": 1763410201126,
+    "endTime": 1763410213634,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763410203572,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "S6E7Q-0200799",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763410201946,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763410203574,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "S6E7Q-0200799",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763410202126,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "QY8YQ-0500772:7c98bca5-9216-447a-b385-32a1dc3badbc": {
+    "id": "7c98bca5-9216-447a-b385-32a1dc3badbc",
+    "name": "HealthMonitor",
+    "parentTraceId": "QY8YQ-0500772",
+    "status": "completed",
+    "startTime": 1763410501126,
+    "endTime": 1763410513877,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763410503735,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "QY8YQ-0500772",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763410501958,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763410503738,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "QY8YQ-0500772",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763410502126,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "BPPE2-0800038:1dce02c1-1a0b-4ab6-8bc3-07c11a5ce4ef": {
+    "id": "1dce02c1-1a0b-4ab6-8bc3-07c11a5ce4ef",
+    "name": "HealthMonitor",
+    "parentTraceId": "BPPE2-0800038",
+    "status": "completed",
+    "startTime": 1763410800339,
+    "endTime": 1763410813116,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763410802988,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "BPPE2-0800038",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763410801123,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763410802992,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "BPPE2-0800038",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763410801229,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "SEVWN-1100029:d1af5e57-a008-4d7a-a488-5f9da693bdc3": {
+    "id": "d1af5e57-a008-4d7a-a488-5f9da693bdc3",
+    "name": "HealthMonitor",
+    "parentTraceId": "SEVWN-1100029",
+    "status": "completed",
+    "startTime": 1763411100329,
+    "endTime": 1763411112879,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763411102856,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "SEVWN-1100029",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763411101036,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763411102858,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "SEVWN-1100029",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763411101245,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "14XHK-1400230:cc34baeb-543a-48b6-80bc-5d717b1f17af": {
+    "id": "cc34baeb-543a-48b6-80bc-5d717b1f17af",
+    "name": "HealthMonitor",
+    "parentTraceId": "14XHK-1400230",
+    "status": "completed",
+    "startTime": 1763411400520,
+    "endTime": 1763411413616,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763411403162,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "14XHK-1400230",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763411401247,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763411403163,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "14XHK-1400230",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763411401419,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "RYF7H-1700073:0c6ad2eb-95d5-4816-aa04-1d161a406867": {
+    "id": "0c6ad2eb-95d5-4816-aa04-1d161a406867",
+    "name": "HealthMonitor",
+    "parentTraceId": "RYF7H-1700073",
+    "status": "completed",
+    "startTime": 1763411700413,
+    "endTime": 1763411712453,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763411702896,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "RYF7H-1700073",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763411701151,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763411702913,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "RYF7H-1700073",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763411701323,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "XE6DG-2000794:32cc2be4-fdeb-4c86-8d59-041e0d9f4597": {
+    "id": "32cc2be4-fdeb-4c86-8d59-041e0d9f4597",
+    "name": "HealthMonitor",
+    "parentTraceId": "XE6DG-2000794",
+    "status": "completed",
+    "startTime": 1763412001135,
+    "endTime": 1763412014025,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763412003702,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "XE6DG-2000794",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763412002012,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763412003705,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "XE6DG-2000794",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763412002132,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "ZK9WD-2300875:10e95e0a-4c01-4730-9f91-fb21a3153b82": {
+    "id": "10e95e0a-4c01-4730-9f91-fb21a3153b82",
+    "name": "HealthMonitor",
+    "parentTraceId": "ZK9WD-2300875",
+    "status": "completed",
+    "startTime": 1763412301317,
+    "endTime": 1763412314360,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763412304203,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "ZK9WD-2300875",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763412302345,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763412304206,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "ZK9WD-2300875",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763412302613,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "TRXPX-2600645:d833b527-e70d-4225-8418-2686041050fa": {
+    "id": "d833b527-e70d-4225-8418-2686041050fa",
+    "name": "HealthMonitor",
+    "parentTraceId": "TRXPX-2600645",
+    "status": "completed",
+    "startTime": 1763412600928,
+    "endTime": 1763412612914,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763412603323,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "TRXPX-2600645",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763412601714,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763412603327,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "TRXPX-2600645",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763412601831,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "ZS2JD-2900866:a3827347-0727-4cab-b362-10a9b2c362c2": {
+    "id": "a3827347-0727-4cab-b362-10a9b2c362c2",
+    "name": "HealthMonitor",
+    "parentTraceId": "ZS2JD-2900866",
+    "status": "completed",
+    "startTime": 1763412901148,
+    "endTime": 1763412913773,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763412903580,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "ZS2JD-2900866",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763412901943,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763412903584,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "ZS2JD-2900866",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763412902120,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "ZZAUD-3200061:793263f5-a729-426d-84ff-91083d38bd4a": {
+    "id": "793263f5-a729-426d-84ff-91083d38bd4a",
+    "name": "HandlePeriodicJob",
+    "parentTraceId": "ZZAUD-3200061",
+    "status": "completed",
+    "startTime": 1763413200463,
+    "endTime": 1763413216122,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HandlePeriodicJob"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763413203448,
+        "level": "info",
+        "message": "Periodic job executed",
+        "metadata": {
+          "traceId": "ZZAUD-3200061",
+          "flows": [
+            "cron-example"
+          ],
+          "step": "HandlePeriodicJob",
+          "level": "info",
+          "time": 1763413201068,
+          "msg": "Periodic job executed"
+        }
+      },
+      {
+        "type": "emit",
+        "timestamp": 1763413203449,
+        "topic": "periodic-job-handled",
+        "success": true,
+        "data": {
+          "message": "Periodic job executed"
+        }
+      }
+    ]
+  },
+  "R9GWP-3500461:b933ed61-a351-48d7-bdb3-84b35dd1d61e": {
+    "id": "b933ed61-a351-48d7-bdb3-84b35dd1d61e",
+    "name": "HealthMonitor",
+    "parentTraceId": "R9GWP-3500461",
+    "status": "completed",
+    "startTime": 1763413500738,
+    "endTime": 1763413513047,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763413503335,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "R9GWP-3500461",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763413501715,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763413503336,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "R9GWP-3500461",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763413501839,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "HSD2S-3800537:e6477578-ff3d-4dab-b5d4-54335b7fe98c": {
+    "id": "e6477578-ff3d-4dab-b5d4-54335b7fe98c",
+    "name": "HealthMonitor",
+    "parentTraceId": "HSD2S-3800537",
+    "status": "completed",
+    "startTime": 1763413800822,
+    "endTime": 1763413813941,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763413803496,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "HSD2S-3800537",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763413801626,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763413803497,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "HSD2S-3800537",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763413801816,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "7C9YD-4100394:93640040-512f-46c7-9a67-8a0b20d57648": {
+    "id": "93640040-512f-46c7-9a67-8a0b20d57648",
+    "name": "HealthMonitor",
+    "parentTraceId": "7C9YD-4100394",
+    "status": "completed",
+    "startTime": 1763414100675,
+    "endTime": 1763414113987,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763414103440,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "7C9YD-4100394",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763414101545,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763414103442,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "7C9YD-4100394",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763414101726,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "6A87B-4400224:8631f384-404f-4f75-9d46-6eeb543194b9": {
+    "id": "8631f384-404f-4f75-9d46-6eeb543194b9",
+    "name": "HealthMonitor",
+    "parentTraceId": "6A87B-4400224",
+    "status": "completed",
+    "startTime": 1763414400532,
+    "endTime": 1763414414510,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763414403300,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "6A87B-4400224",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763414401335,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763414403300,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "6A87B-4400224",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763414401520,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "NXCRC-4700076:26477ea3-e54d-4355-bbaa-c9d01ecc15cf": {
+    "id": "26477ea3-e54d-4355-bbaa-c9d01ecc15cf",
+    "name": "HealthMonitor",
+    "parentTraceId": "NXCRC-4700076",
+    "status": "completed",
+    "startTime": 1763414700320,
+    "endTime": 1763414711623,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763414702598,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "NXCRC-4700076",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763414701026,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763414702612,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "NXCRC-4700076",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763414701143,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "GJ32S-5000939:ab6f1316-a055-46e4-9362-5077ee31cdc9": {
+    "id": "ab6f1316-a055-46e4-9362-5077ee31cdc9",
+    "name": "HealthMonitor",
+    "parentTraceId": "GJ32S-5000939",
+    "status": "completed",
+    "startTime": 1763415001232,
+    "endTime": 1763415013061,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763415003741,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "GJ32S-5000939",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763415002049,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763415003742,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "GJ32S-5000939",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763415002221,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "WZ93F-5300929:09ae2374-8c01-4fdc-a045-47145169dbef": {
+    "id": "09ae2374-8c01-4fdc-a045-47145169dbef",
+    "name": "HealthMonitor",
+    "parentTraceId": "WZ93F-5300929",
+    "status": "completed",
+    "startTime": 1763415301232,
+    "endTime": 1763415312668,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763415303726,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "WZ93F-5300929",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763415302037,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763415303730,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "WZ93F-5300929",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763415302213,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "KQWT5-5600565:31fc8ad0-6ce9-4c1e-a873-d3190d44ea78": {
+    "id": "31fc8ad0-6ce9-4c1e-a873-d3190d44ea78",
+    "name": "HealthMonitor",
+    "parentTraceId": "KQWT5-5600565",
+    "status": "completed",
+    "startTime": 1763415600839,
+    "endTime": 1763415613344,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763415603444,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "KQWT5-5600565",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763415601653,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763415603447,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "KQWT5-5600565",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763415601916,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "DVJSE-5900471:47b08d77-2444-4338-9e23-199aef56ae41": {
+    "id": "47b08d77-2444-4338-9e23-199aef56ae41",
+    "name": "HealthMonitor",
+    "parentTraceId": "DVJSE-5900471",
+    "status": "completed",
+    "startTime": 1763415900812,
+    "endTime": 1763415913803,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763415903653,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "DVJSE-5900471",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763415901626,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763415903659,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "DVJSE-5900471",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763415901750,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "1CNVZ-6200701:b429b58a-e997-4df6-bf5a-b31890f348be": {
+    "id": "b429b58a-e997-4df6-bf5a-b31890f348be",
+    "name": "HealthMonitor",
+    "parentTraceId": "1CNVZ-6200701",
+    "status": "completed",
+    "startTime": 1763416200946,
+    "endTime": 1763416212973,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763416203313,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "1CNVZ-6200701",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763416201736,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763416203314,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "1CNVZ-6200701",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763416201914,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "1Y4DM-6500725:16576c1c-9ebf-43d2-8fa7-9c38022e6d5e": {
+    "id": "16576c1c-9ebf-43d2-8fa7-9c38022e6d5e",
+    "name": "HealthMonitor",
+    "parentTraceId": "1Y4DM-6500725",
+    "status": "completed",
+    "startTime": 1763416501025,
+    "endTime": 1763416512378,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763416503461,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "1Y4DM-6500725",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763416501826,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763416503463,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "1Y4DM-6500725",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763416501931,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "RGSWV-6800267:6141e62c-bfd4-430d-a562-ed465caa7f28": {
+    "id": "6141e62c-bfd4-430d-a562-ed465caa7f28",
+    "name": "HandlePeriodicJob",
+    "parentTraceId": "RGSWV-6800267",
+    "status": "completed",
+    "startTime": 1763416800725,
+    "endTime": 1763416815070,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HandlePeriodicJob"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763416803909,
+        "level": "info",
+        "message": "Periodic job executed",
+        "metadata": {
+          "traceId": "RGSWV-6800267",
+          "flows": [
+            "cron-example"
+          ],
+          "step": "HandlePeriodicJob",
+          "level": "info",
+          "time": 1763416801533,
+          "msg": "Periodic job executed"
+        }
+      },
+      {
+        "type": "emit",
+        "timestamp": 1763416803913,
+        "topic": "periodic-job-handled",
+        "success": true,
+        "data": {
+          "message": "Periodic job executed"
+        }
+      }
+    ]
+  },
+  "B59W3-7100945:697d73ea-c5cf-4ded-9037-67b78c982542": {
+    "id": "697d73ea-c5cf-4ded-9037-67b78c982542",
+    "name": "HealthMonitor",
+    "parentTraceId": "B59W3-7100945",
+    "status": "completed",
+    "startTime": 1763417101236,
+    "endTime": 1763417112068,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763417103486,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "B59W3-7100945",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763417102017,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763417103488,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "B59W3-7100945",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763417102122,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "JDZJJ-7400126:3ab18a6a-b380-4ca5-aec3-a3dbcb6ff404": {
+    "id": "3ab18a6a-b380-4ca5-aec3-a3dbcb6ff404",
+    "name": "HealthMonitor",
+    "parentTraceId": "JDZJJ-7400126",
+    "status": "completed",
+    "startTime": 1763417400431,
+    "endTime": 1763417412258,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763417402990,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "JDZJJ-7400126",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763417401224,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763417402992,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "JDZJJ-7400126",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763417401330,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "1PNSC-7700523:5f7ba007-6e8e-49f4-a897-9a39523c5852": {
+    "id": "5f7ba007-6e8e-49f4-a897-9a39523c5852",
+    "name": "HealthMonitor",
+    "parentTraceId": "1PNSC-7700523",
+    "status": "completed",
+    "startTime": 1763417700820,
+    "endTime": 1763417712839,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763417703341,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "1PNSC-7700523",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763417701629,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763417703343,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "1PNSC-7700523",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763417701741,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "CXB49-8000713:0662c623-ebf9-4429-a88c-4d5a4516c4df": {
+    "id": "0662c623-ebf9-4429-a88c-4d5a4516c4df",
+    "name": "HealthMonitor",
+    "parentTraceId": "CXB49-8000713",
+    "status": "completed",
+    "startTime": 1763418001026,
+    "endTime": 1763418012656,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763418003454,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "CXB49-8000713",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763418001833,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763418003456,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "CXB49-8000713",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763418001946,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "9WMDP-8300642:3e31f220-98be-4939-94be-079599d579de": {
+    "id": "3e31f220-98be-4939-94be-079599d579de",
+    "name": "HealthMonitor",
+    "parentTraceId": "9WMDP-8300642",
+    "status": "completed",
+    "startTime": 1763418300935,
+    "endTime": 1763418312788,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763418303616,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "9WMDP-8300642",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763418301826,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763418303619,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "9WMDP-8300642",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763418302012,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "NPUNF-8600727:ce4853d8-e587-403f-aad1-fa33fc54d8b6": {
+    "id": "ce4853d8-e587-403f-aad1-fa33fc54d8b6",
+    "name": "HealthMonitor",
+    "parentTraceId": "NPUNF-8600727",
+    "status": "completed",
+    "startTime": 1763418601025,
+    "endTime": 1763418612813,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763418603692,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "NPUNF-8600727",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763418601822,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763418603694,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "NPUNF-8600727",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763418601932,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "AUVEN-8900932:5392575d-09e3-4512-a233-b5ae0510132f": {
+    "id": "5392575d-09e3-4512-a233-b5ae0510132f",
+    "name": "HealthMonitor",
+    "parentTraceId": "AUVEN-8900932",
+    "status": "completed",
+    "startTime": 1763418901236,
+    "endTime": 1763418912760,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763418903797,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "AUVEN-8900932",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763418902059,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763418903801,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "AUVEN-8900932",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763418902228,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "S3DQK-9200606:e9054bb9-eae2-49a4-bd25-72712a1e1e09": {
+    "id": "e9054bb9-eae2-49a4-bd25-72712a1e1e09",
+    "name": "HealthMonitor",
+    "parentTraceId": "S3DQK-9200606",
+    "status": "completed",
+    "startTime": 1763419200935,
+    "endTime": 1763419212657,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763419203541,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "S3DQK-9200606",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763419201841,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763419203543,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "S3DQK-9200606",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763419202029,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "ZEHA7-9500322:cd3bfe62-ca15-47c4-adbe-72181d086cd1": {
+    "id": "cd3bfe62-ca15-47c4-adbe-72181d086cd1",
+    "name": "HealthMonitor",
+    "parentTraceId": "ZEHA7-9500322",
+    "status": "completed",
+    "startTime": 1763419500642,
+    "endTime": 1763419512452,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763419503585,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "ZEHA7-9500322",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763419501439,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763419503589,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "ZEHA7-9500322",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763419501614,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "N2KWN-9800499:11f3020a-a580-4021-9eb0-42f5cc3b7eda": {
+    "id": "11f3020a-a580-4021-9eb0-42f5cc3b7eda",
+    "name": "HealthMonitor",
+    "parentTraceId": "N2KWN-9800499",
+    "status": "completed",
+    "startTime": 1763419800838,
+    "endTime": 1763419812289,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763419803395,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "N2KWN-9800499",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763419801652,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763419803396,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "N2KWN-9800499",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763419801823,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "BEXYY-0100572:37399c1b-d8cd-4b62-9ab0-468dc60d532b": {
+    "id": "37399c1b-d8cd-4b62-9ab0-468dc60d532b",
+    "name": "HealthMonitor",
+    "parentTraceId": "BEXYY-0100572",
+    "status": "completed",
+    "startTime": 1763420100918,
+    "endTime": 1763420111095,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763420103474,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "BEXYY-0100572",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763420101649,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763420103477,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "BEXYY-0100572",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763420101830,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "2XEE7-0400602:2996764b-c9dc-42a4-8d12-005026ae84d7": {
+    "id": "2996764b-c9dc-42a4-8d12-005026ae84d7",
+    "name": "HandlePeriodicJob",
+    "parentTraceId": "2XEE7-0400602",
+    "status": "completed",
+    "startTime": 1763420401029,
+    "endTime": 1763420413782,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HandlePeriodicJob"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763420403975,
+        "level": "info",
+        "message": "Periodic job executed",
+        "metadata": {
+          "traceId": "2XEE7-0400602",
+          "flows": [
+            "cron-example"
+          ],
+          "step": "HandlePeriodicJob",
+          "level": "info",
+          "time": 1763420401819,
+          "msg": "Periodic job executed"
+        }
+      },
+      {
+        "type": "emit",
+        "timestamp": 1763420403978,
+        "topic": "periodic-job-handled",
+        "success": true,
+        "data": {
+          "message": "Periodic job executed"
+        }
+      }
+    ]
+  },
+  "8M7NS-0700613:5e2ad1cf-ebb6-4ef3-a8b7-93ad3d616a9a": {
+    "id": "5e2ad1cf-ebb6-4ef3-a8b7-93ad3d616a9a",
+    "name": "HealthMonitor",
+    "parentTraceId": "8M7NS-0700613",
+    "status": "completed",
+    "startTime": 1763420700944,
+    "endTime": 1763420712355,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763420703553,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "8M7NS-0700613",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763420701819,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763420703554,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "8M7NS-0700613",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763420701933,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "DSN28-1000324:3e6d9d03-81cb-4969-9920-13de835681ae": {
+    "id": "3e6d9d03-81cb-4969-9920-13de835681ae",
+    "name": "HealthMonitor",
+    "parentTraceId": "DSN28-1000324",
+    "status": "completed",
+    "startTime": 1763421000637,
+    "endTime": 1763421011614,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763421003178,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "DSN28-1000324",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763421001434,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763421003179,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "DSN28-1000324",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763421001612,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "E5EUQ-1300421:d346882c-09cc-41b4-9ab1-ed741090f6fb": {
+    "id": "d346882c-09cc-41b4-9ab1-ed741090f6fb",
+    "name": "HealthMonitor",
+    "parentTraceId": "E5EUQ-1300421",
+    "status": "completed",
+    "startTime": 1763421300735,
+    "endTime": 1763421312324,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763421303364,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "E5EUQ-1300421",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763421301439,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763421303367,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "E5EUQ-1300421",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763421301614,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "WRKU4-1600153:796c5f44-6803-49fb-89de-48a511ecbb11": {
+    "id": "796c5f44-6803-49fb-89de-48a511ecbb11",
+    "name": "HealthMonitor",
+    "parentTraceId": "WRKU4-1600153",
+    "status": "completed",
+    "startTime": 1763421600452,
+    "endTime": 1763421611389,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763421603114,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "WRKU4-1600153",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763421601246,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763421603115,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "WRKU4-1600153",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763421601422,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "NWS6R-1900302:9c2ed97a-20f3-4788-9b1a-915ba40b1d8f": {
+    "id": "9c2ed97a-20f3-4788-9b1a-915ba40b1d8f",
+    "name": "HealthMonitor",
+    "parentTraceId": "NWS6R-1900302",
+    "status": "completed",
+    "startTime": 1763421900629,
+    "endTime": 1763421911664,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763421903028,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "NWS6R-1900302",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763421901425,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763421903030,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "NWS6R-1900302",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763421901536,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "J6EQT-2200440:9e187b50-01cc-4a1b-90ea-4071f23ae1df": {
+    "id": "9e187b50-01cc-4a1b-90ea-4071f23ae1df",
+    "name": "HealthMonitor",
+    "parentTraceId": "J6EQT-2200440",
+    "status": "completed",
+    "startTime": 1763422200739,
+    "endTime": 1763422211861,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763422203415,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "J6EQT-2200440",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763422201536,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763422203417,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "J6EQT-2200440",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763422201714,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "CBJJA-2500056:8d70424d-a9f4-450d-b663-8bef0dbd64ea": {
+    "id": "8d70424d-a9f4-450d-b663-8bef0dbd64ea",
+    "name": "HealthMonitor",
+    "parentTraceId": "CBJJA-2500056",
+    "status": "completed",
+    "startTime": 1763422500348,
+    "endTime": 1763422510642,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763422502658,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "CBJJA-2500056",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763422501122,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763422502661,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "CBJJA-2500056",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763422501313,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "2VPPS-2800629:e57d04b3-3439-4428-bf65-a747827961f6": {
+    "id": "e57d04b3-3439-4428-bf65-a747827961f6",
+    "name": "HealthMonitor",
+    "parentTraceId": "2VPPS-2800629",
+    "status": "completed",
+    "startTime": 1763422800926,
+    "endTime": 1763422813036,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763422803789,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "2VPPS-2800629",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763422801760,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763422803790,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "2VPPS-2800629",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763422801956,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "4TP82-3100958:43170a8b-6ef2-4b50-b4f4-3a693a1d6e59": {
+    "id": "43170a8b-6ef2-4b50-b4f4-3a693a1d6e59",
+    "name": "HealthMonitor",
+    "parentTraceId": "4TP82-3100958",
+    "status": "completed",
+    "startTime": 1763423101265,
+    "endTime": 1763423113860,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763423103926,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "4TP82-3100958",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763423102148,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763423103928,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "4TP82-3100958",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763423102318,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "NSGP6-3400938:4986c147-8e24-46ab-abe2-d3731d4ca641": {
+    "id": "4986c147-8e24-46ab-abe2-d3731d4ca641",
+    "name": "HealthMonitor",
+    "parentTraceId": "NSGP6-3400938",
+    "status": "completed",
+    "startTime": 1763423401224,
+    "endTime": 1763423413212,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763423403869,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "NSGP6-3400938",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763423402119,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763423403869,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "NSGP6-3400938",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763423402233,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "WCMBR-3700500:dc9a6ea3-f0b6-4825-a93e-5963a788409d": {
+    "id": "dc9a6ea3-f0b6-4825-a93e-5963a788409d",
+    "name": "HealthMonitor",
+    "parentTraceId": "WCMBR-3700500",
+    "status": "completed",
+    "startTime": 1763423700732,
+    "endTime": 1763423713113,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HealthMonitor"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763423703386,
+        "level": "info",
+        "message": "Starting health check for all services",
+        "metadata": {
+          "traceId": "WCMBR-3700500",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "level": "info",
+          "time": 1763423701727,
+          "msg": "Starting health check for all services"
+        }
+      },
+      {
+        "type": "log",
+        "timestamp": 1763423703388,
+        "level": "warn",
+        "message": "Unhealthy services detected",
+        "metadata": {
+          "traceId": "WCMBR-3700500",
+          "flows": [
+            "vps-orchestration"
+          ],
+          "step": "HealthMonitor",
+          "unhealthyServices": [
+            {
+              "service": "Traefik",
+              "name": "Traefik",
+              "status": "unhealthy",
+              "error": "Request failed with status code 404"
+            }
+          ],
+          "level": "warn",
+          "time": 1763423701913,
+          "msg": "Unhealthy services detected"
+        }
+      }
+    ]
+  },
+  "Q6MEY-4000317:7417881b-fc36-4e52-970e-99d9f5a55511": {
+    "id": "7417881b-fc36-4e52-970e-99d9f5a55511",
+    "name": "HandlePeriodicJob",
+    "parentTraceId": "Q6MEY-4000317",
+    "status": "completed",
+    "startTime": 1763424000943,
+    "endTime": 1763424027659,
+    "entryPoint": {
+      "type": "cron",
+      "stepName": "HandlePeriodicJob"
+    },
+    "events": [
+      {
+        "type": "log",
+        "timestamp": 1763424015106,
+        "level": "info",
+        "message": "Periodic job executed",
+        "metadata": {
+          "traceId": "Q6MEY-4000317",
+          "flows": [
+            "cron-example"
+          ],
+          "step": "HandlePeriodicJob",
+          "level": "info",
+          "time": 1763424003065,
+          "msg": "Periodic job executed"
+        }
+      },
+      {
+        "type": "emit",
+        "timestamp": 1763424015108,
+        "topic": "periodic-job-handled",
+        "success": true,
+        "data": {
+          "message": "Periodic job executed"
+        }
+      }
+    ]
+  }
+}

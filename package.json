@@ -1,0 +1,27 @@
+{
+  "name": "motia-vps-orchestration",
+  "version": "1.0.0",
+  "description": "Central orchestration service for VPS using Motia framework",
+  "scripts": {
+    "dev": "motia dev",
+    "build": "motia build",
+    "start": "motia start"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "motia": "latest",
+    "pg": "^8.13.0",
+    "redis": "^4.7.0",
+    "uuid": "^13.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
